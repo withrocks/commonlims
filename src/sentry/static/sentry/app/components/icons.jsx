@@ -19,6 +19,10 @@ import {
   faExclamationTriangle,
   faInfoCircle,
   faBug,
+  faCaretUp,
+  faCaretDown,
+  faCaretRight,
+  faCaretLeft,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Find more fontawesome icons here: https://fontawesome.com/icons?d=gallery&s=solid&m=free
@@ -40,6 +44,10 @@ export const Error = () => <FontAwesomeIcon icon={faExclamationCircle} />;
 export const Warning = () => <FontAwesomeIcon icon={faExclamationTriangle} />;
 export const Info = () => <FontAwesomeIcon icon={faInfoCircle} />;
 export const Debug = () => <FontAwesomeIcon icon={faBug} />;
+export const CaretUp = () => <FontAwesomeIcon icon={faCaretUp} />;
+export const CaretDown = () => <FontAwesomeIcon icon={faCaretDown} />;
+export const CaretRight = () => <FontAwesomeIcon icon={faCaretRight} />;
+export const CaretLeft = () => <FontAwesomeIcon icon={faCaretLeft} />;
 
 // Returns a colored icon for a particular issue
 export function getIssueIcon(type, hasDefaultColor) {

@@ -3,6 +3,7 @@ import styled from 'react-emotion';
 import LoadingIndicator from 'app/components/loadingIndicator';
 import LoadingError from 'app/components/loadingError';
 import {Panel, PanelBody} from 'app/components/panels';
+import {CaretDown, CaretRight} from 'app/components/icons';
 import PropTypes from 'prop-types';
 import Checkbox from 'app/components/checkbox';
 
@@ -66,6 +67,33 @@ class ListView extends React.Component {
     listActionBar: PropTypes.object,
   };
 
+  constructor() {
+    super();
+    this.state = {
+      expandedRows: [],
+    };
+  }
+
+  handleRowClick(rowId) {
+    const currentlyExpandedRows = this.state.expandedRows;
+    const isRowExpanded = currentlyExpandedRows.includes(rowId);
+    const newExpandedRows = isRowExpanded
+      ? currentlyExpandedRows.filter(id => id !== rowId)
+      : currentlyExpandedRows.concat(rowId);
+
+    this.setState({expandedRows: newExpandedRows});
+  }
+
+  renderRowExpander(rowId) {
+    const currentlyExpandedRows = this.state.expandedRows;
+    const isRowExpanded = currentlyExpandedRows.includes(rowId);
+    if (isRowExpanded) {
+      return <CaretDown />;
+    } else {
+      return <CaretRight />;
+    }
+  }
+
   getDisplayCell(entryId, header) {
     const row = this.props.dataById[entryId];
 
@@ -94,6 +122,11 @@ class ListView extends React.Component {
             <table>
               <thead>
                 <tr>
+                  {
+                    <th>
+                      <div />
+                    </th>
+                  }
                   {this.props.canSelect && (
                     <th>
                       <Checkbox
@@ -115,6 +148,7 @@ class ListView extends React.Component {
                 {this.props.visibleIds.map(entryId => {
                   return (
                     <tr key={'parent-' + entryId}>
+                      <td>{this.renderRowExpander(entryId)}</td>
                       {this.props.canSelect && (
                         <td>
                           <Checkbox
