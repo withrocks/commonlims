@@ -98,7 +98,10 @@ class Substances extends React.Component {
       {
         Header: 'Sample Type',
         id: 'sample_type',
-        accessor: d => (d.properties.sample_type ? d.properties.sample_type.value : null),
+        accessor: d =>
+          d.properties && d.properties.sample_type
+            ? d.properties.sample_type.value
+            : null,
       },
       {
         Header: 'Priority',

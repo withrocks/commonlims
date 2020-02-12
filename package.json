@@ -95,6 +95,7 @@
     "redux-mock-store": "^1.5.3",
     "redux-thunk": "^2.3.0",
     "reflux": "0.4.1",
+    "run-p": "0.0.0",
     "scroll-to-element": "^2.0.0",
     "sentry-dreamy-components": "^1.0.0",
     "sprintf-js": "1.0.3",
@@ -126,6 +127,7 @@
     "eslint-config-sentry-app": "^1.5.0",
     "jest": "23.6.0",
     "jest-junit": "^3.4.1",
+    "json-server": "^0.15.1",
     "mockdate": "2.0.2",
     "moxios": "^0.4.0",
     "prettier": "1.7.4",
@@ -161,6 +163,10 @@
     "storybook": "start-storybook -p 9001 -c .storybook",
     "storybook-build": "build-storybook -c .storybook -o .storybook-out && sed -i -e 's/\\/sb_dll/sb_dll/g' .storybook-out/index.html",
     "snapshot": "build-storybook && PERCY_TOKEN=$STORYBOOK_PERCY_TOKEN PERCY_PROJECT=$STORYBOOK_PERCY_PROJECT percy-storybook --widths=1280",
-    "webpack-profile": "yarn -s webpack --profile --json > stats.json"
+    "webpack-profile": "yarn -s webpack --profile --json > stats.json",
+    "start": "run-p start:dev start:api",
+    "start:dev": "webpack-dev-server --config webpack.config.js --port 3000",
+    "start:api": "node myserver/apiServer.js",
+    "prestart:api": "node myserver/createMockDb.js"
   }
 }

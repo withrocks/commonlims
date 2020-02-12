@@ -6,6 +6,7 @@ import {Panel, PanelBody} from 'app/components/panels';
 import {CaretDown, CaretRight} from 'app/components/icons';
 import PropTypes from 'prop-types';
 import Checkbox from 'app/components/checkbox';
+import {Set} from 'immutable';
 
 const ColumnHeader = styled('div')`
   font-size: 14px;
@@ -84,9 +85,13 @@ class ListView extends React.Component {
     this.setState({expandedRows: newExpandedRows});
   }
 
-  renderRowExpander(rowId) {
+  renderRowExpander(entryId) {
+    const entryData = this.props.dataById[entryId];
+    if (!entryData.isGroupHeader) {
+      return '';
+    }
     const currentlyExpandedRows = this.state.expandedRows;
-    const isRowExpanded = currentlyExpandedRows.includes(rowId);
+    const isRowExpanded = currentlyExpandedRows.includes(entryId);
     if (isRowExpanded) {
       return <CaretDown />;
     } else {
