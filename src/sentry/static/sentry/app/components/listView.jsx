@@ -101,7 +101,6 @@ class ListView extends React.Component {
 
   getDisplayCell(entryId, header) {
     const row = this.props.dataById[entryId];
-
     if (typeof header.accessor === 'function') {
       return header.accessor(row);
     }

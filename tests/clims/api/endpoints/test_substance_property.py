@@ -49,6 +49,7 @@ class SubstancePropertyEndpointTest(APITestCase):
 
         url = reverse('clims-api-0-substance-property',
                       kwargs={'organization_slug': sample.organization.name, 'prop': 'color'})
+
         self.login_as(self.user)
         response = self.client.get(url, {'unique': True})
         assert response.status_code == 200, response.content

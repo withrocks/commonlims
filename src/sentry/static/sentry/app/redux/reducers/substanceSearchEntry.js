@@ -50,20 +50,23 @@ const substanceSearchEntry = (state = initialState, action) => {
       // a dictionary and then update the store's byIds as required.
       const byIds = {};
       for (const entry of action.substanceSearchEntries) {
+        entry.isGroupHeader = action.isGroupHeader;
         byIds[entry.id] = entry;
       }
+      debugger;
       const visibleIds = action.substanceSearchEntries.map(x => x.id);
 
       return {
         ...state,
         errorMessage: null,
         loading: false,
-        byIds: merge({}, state.byIds, byIds),
+        byIds,
         visibleIds,
         pageLinks: action.link,
       };
     }
     case SUBSTANCE_SEARCH_ENTRIES_GET_FAILURE:
+      debugger;
       return {
         ...state,
         errorMessage: action.message,

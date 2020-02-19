@@ -30,11 +30,16 @@ export const substanceSearchEntriesGetRequest = (search, groupBy, cursor) => {
   };
 };
 
-export const substanceSearchEntriesGetSuccess = (substanceSearchEntries, link) => {
+export const substanceSearchEntriesGetSuccess = (
+  substanceSearchEntries,
+  link,
+  isGroupHeader
+) => {
   return {
     type: SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
     substanceSearchEntries,
     link,
+    isGroupHeader,
   };
 };
 
@@ -45,19 +50,39 @@ export const substanceSearchEntriesGetFailure = err => ({
 
 export const substanceSearchEntriesGet = (search, groupBy, cursor) => dispatch => {
   dispatch(substanceSearchEntriesGetRequest(search, groupBy, cursor));
-
   const request = {
     params: {
       search,
       cursor,
     },
   };
-  return axios
-    .get('/api/0/organizations/lab/substances/', request)
-    .then(res => {
-      dispatch(substanceSearchEntriesGetSuccess(res.data, res.headers.link));
-    })
-    .catch(err => dispatch(substanceSearchEntriesGetFailure(err)));
+  // return axios
+  //   .get('/api/0/organizations/lab/substances/', request)
+  //   .then(res => {
+  //     dispatch(substanceSearchEntriesGetSuccess(res.data, res.headers.link));
+  //   })
+  //   .catch(err => dispatch(substanceSearchEntriesGetFailure(err)));
+
+  if (groupBy === 'substance') {
+    return axios
+      .get('/api/0/organizations/lab/substances/', request)
+      .then(res => {
+        dispatch(substanceSearchEntriesGetSuccess(res.data, res.headers.link, false));
+      })
+      .catch(err => dispatch(substanceSearchEntriesGetFailure(err)));
+  } else {
+    const request2 = {
+      params: {
+        unique: true,
+      },
+    };
+    return axios
+      .get('/api/0/organizations/lab/substances/property/sample_type/', request2)
+      .then(res => {
+        dispatch(substanceSearchEntriesGetSuccess(res.data, res.headers.link, true));
+      })
+      .catch(err => dispatch(substanceSearchEntriesGetFailure(err)));
+  }
 };
 
 export const substanceSearchEntriesToggleSelectAll = doSelect => {
