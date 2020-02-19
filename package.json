@@ -166,9 +166,9 @@
     "storybook-build": "build-storybook -c .storybook -o .storybook-out && sed -i -e 's/\\/sb_dll/sb_dll/g' .storybook-out/index.html",
     "snapshot": "build-storybook && PERCY_TOKEN=$STORYBOOK_PERCY_TOKEN PERCY_PROJECT=$STORYBOOK_PERCY_PROJECT percy-storybook --widths=1280",
     "webpack-profile": "yarn -s webpack --profile --json > stats.json",
-    "start": "run-p start:dev start:api",
-    "start:dev": "webpack-dev-server --config webpack.config.mock.js --port 3000",
-    "start:api": "node myserver/apiServer.js",
-    "prestart:api": "node myserver/createMockDb.js"
+    // "start": "run-p start:dev start:api",
+    // "start:dev": "webpack-dev-server --config webpack.config.mock.js --port 3000",
+    // "start:api": "node myserver/apiServer.js",
+    // "prestart:api": "node myserver/createMockDb.js"
   }
 }
