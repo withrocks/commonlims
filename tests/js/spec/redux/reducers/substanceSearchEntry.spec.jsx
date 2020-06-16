@@ -224,6 +224,24 @@ describe('substance reducer', () => {
     });
   });
 
+  it('should handle SUBSTANCE_SEARCH_ENTRIES_EXPAND_COLLAPSE_FAILURE', () => {
+    const prevState = {
+      ...initialState,
+      loading: true,
+    };
+
+    const nextState = substanceSearchEntry(prevState, {
+      type: 'SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE',
+      message: 'oopsiedoodle',
+    });
+
+    expect(nextState).toEqual({
+      ...initialState,
+      loading: false,
+      errorMessage: 'oopsiedoodle',
+    });
+  });
+
   it('should handle SUBSTANCE_SEARCH_ENTRIES_GET_FAILURE', () => {
     const prevState = {
       ...initialState,
