@@ -9,8 +9,7 @@ ListView {
     "columns": Array [
       Object {
         "Header": "Sample name",
-        "accessor": "name",
-        "aggregate": [Function],
+        "accessor": [Function],
         "id": "name",
       },
       Object {
@@ -26,9 +25,11 @@ ListView {
     ],
     "dataById": Object {
       "1": Object {
-        "id": 1,
+        "entity": Object {
+          "global_id": 1,
+          "name": "Zombie brain",
+        },
         "isGroupHeader": true,
-        "name": "Zombie brain",
       },
     },
     "errorMessage": "",
@@ -56,8 +57,7 @@ ListView {
           Array [
             Object {
               "Header": "Sample name",
-              "accessor": "name",
-              "aggregate": [Function],
+              "accessor": [Function],
               "id": "name",
             },
             Object {
@@ -75,9 +75,11 @@ ListView {
         dataById={
           Object {
             "1": Object {
-              "id": 1,
+              "entity": Object {
+                "global_id": 1,
+                "name": "Zombie brain",
+              },
               "isGroupHeader": true,
-              "name": "Zombie brain",
             },
           }
         }

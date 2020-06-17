@@ -51,7 +51,7 @@ describe('substance reducer', () => {
 
     const action = {
       type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-      substanceSearchEntries: responseNoGroup,
+      fetchedEntities: responseNoGroup,
       groupBy: 'substance',
       link: 'some-link',
     };
@@ -83,7 +83,7 @@ describe('substance reducer', () => {
 
     const action = {
       type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-      substanceSearchEntries: responseGrouped,
+      fetchedEntities: responseGrouped,
       groupBy: 'sample_type',
       link: 'some-link',
     };
@@ -110,7 +110,7 @@ describe('substance reducer', () => {
 
     const action = {
       type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-      substanceSearchEntries: mockResponseNoGroup,
+      fetchedEntities: mockResponseNoGroup,
       groupBy: 'substance',
       link: 'some-link',
     };
@@ -120,8 +120,8 @@ describe('substance reducer', () => {
 
     // Assert
 
-    const responseFromReducer = TestStubs.SubstanceEntriesFromReducer(2, 'substance');
-    const expectedByIds = keyBy(responseFromReducer, (entry) => entry.global_id);
+    const responseFromReducer = TestStubs.ListViewEntriesFromReducer(2, 'substance');
+    const expectedByIds = keyBy(responseFromReducer, (entry) => entry.entity.global_id);
     expect(nextState).toEqual({
       ...prevState,
       errorMessage: null,
@@ -138,7 +138,7 @@ describe('substance reducer', () => {
 
     const action = {
       type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-      substanceSearchEntries: mockResponseGrouped,
+      fetchedEntities: mockResponseGrouped,
       link: 'some-link',
       groupBy: 'sample_type',
     };
@@ -155,13 +155,18 @@ describe('substance reducer', () => {
     // Assert
     const expectedEntryFromReducer = [
       {
-        global_id: 'Parent-1',
-        name: 'my_sample_type',
+        entity: {
+          global_id: 'Parent-1',
+          name: 'my_sample_type',
+        },
         isGroupHeader: true,
       },
     ];
 
-    const expectedByIds = keyBy(expectedEntryFromReducer, (entry) => entry.global_id);
+    const expectedByIds = keyBy(
+      expectedEntryFromReducer,
+      (entry) => entry.entity.global_id
+    );
 
     expect(nextState).toEqual({
       ...prevState,
@@ -179,7 +184,7 @@ describe('substance reducer', () => {
 
     const action = {
       type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-      substanceSearchEntries: mockResponseGrouped,
+      fetchedEntities: mockResponseGrouped,
       link: 'some-link',
       groupBy: 'container',
     };
@@ -196,13 +201,18 @@ describe('substance reducer', () => {
     // Assert
     const expectedEntryFromReducer = [
       {
-        global_id: 'Container-1',
-        name: 'mycontainer',
+        entity: {
+          global_id: 'Container-1',
+          name: 'mycontainer',
+        },
         isGroupHeader: true,
       },
     ];
 
-    const expectedByIds = keyBy(expectedEntryFromReducer, (entry) => entry.global_id);
+    const expectedByIds = keyBy(
+      expectedEntryFromReducer,
+      (entry) => entry.entity.global_id
+    );
 
     expect(nextState).toEqual({
       ...prevState,

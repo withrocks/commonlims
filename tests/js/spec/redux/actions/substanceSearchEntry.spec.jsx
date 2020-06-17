@@ -39,14 +39,12 @@ describe('substance redux actions', function () {
     });
 
     it('should create an action to handle substance search entries GET success', () => {
-      const substanceSearchEntries = [mockResponseNoGroup];
+      const fetchedEntities = [mockResponseNoGroup];
       const expectedAction = {
         type: SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
-        substanceSearchEntries,
+        fetchedEntities,
       };
-      expect(substanceSearchEntriesGetSuccess(substanceSearchEntries)).toEqual(
-        expectedAction
-      );
+      expect(substanceSearchEntriesGetSuccess(fetchedEntities)).toEqual(expectedAction);
     });
 
     it('should create an action to handle substance search entries GET failure', () => {
@@ -58,13 +56,13 @@ describe('substance redux actions', function () {
     });
 
     it('should create an action to GET substance search entries from the substances API', async () => {
-      const substanceSearchEntries = mockResponseNoGroup;
+      const fetchedEntities = mockResponseNoGroup;
       const store = mockStore({substances: []});
 
       // TODO: New endpoint
       moxios.stubRequest('/api/0/organizations/lab/substances/?search=search', {
         status: 200,
-        responseText: substanceSearchEntries,
+        responseText: fetchedEntities,
         headers: [],
       });
 
@@ -80,7 +78,7 @@ describe('substance redux actions', function () {
         },
         {
           type: SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
-          substanceSearchEntries,
+          fetchedEntities,
           groupBy,
         },
       ];
@@ -98,14 +96,14 @@ describe('substance redux actions', function () {
     it('should create an action to GET grouped substances', () => {
       const mockResponseGrouped = ['sample_type1'];
 
-      const substanceSearchEntries = mockResponseGrouped;
+      const fetchedEntities = mockResponseGrouped;
       const store = mockStore({substances: []});
 
       moxios.stubRequest(
         '/api/0/organizations/lab/substances/property/sample_type/?unique=true',
         {
           status: 200,
-          responseText: substanceSearchEntries,
+          responseText: fetchedEntities,
           headers: [],
         }
       );
@@ -124,7 +122,7 @@ describe('substance redux actions', function () {
         {
           type: SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
           groupBy,
-          substanceSearchEntries,
+          fetchedEntities,
         },
       ];
       return store

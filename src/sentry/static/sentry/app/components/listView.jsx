@@ -102,7 +102,7 @@ class ListView extends React.Component {
   getFontStyle(entryId, header) {
     const row = this.props.dataById[entryId];
     if (header.fontstyle !== undefined) {
-      return header.fontstyle(row);
+      return header.fontstyle(row.isGroupHeader);
     }
     return 'normal';
   }
@@ -110,7 +110,7 @@ class ListView extends React.Component {
   getDisplayCell(entryId, header) {
     const row = this.props.dataById[entryId];
     if (typeof header.accessor === 'function') {
-      return header.accessor(row);
+      return header.accessor(row.entity, row.isGroupHeader);
     }
     return row[header.accessor];
   }

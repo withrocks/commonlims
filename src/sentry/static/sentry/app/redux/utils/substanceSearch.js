@@ -37,22 +37,20 @@ export class ListViewEntryGenerator {
     this.tempId = 1;
   }
 
-  get(groupBy, originalEntry) {
+  get(groupBy, entity) {
     const isGroupHeader = groupBy !== 'substance';
-    let name = null;
-    let global_id = null;
+
+    let tempEntity = null;
     if (groupBy === 'sample_type') {
-      name = originalEntry;
-      global_id = 'Parent-' + this.tempId++;
-    } else if (groupBy === 'container') {
-      name = originalEntry.name;
-      global_id = originalEntry.global_id;
+      tempEntity = {
+        global_id: 'Parent-' + this.tempId++,
+        name: entity,
+      };
     }
-    const tempEntry = {
-      global_id,
-      name,
+    const needTempEntry = groupBy === 'sample_type';
+    const listViewEntry = {
+      entity: needTempEntry ? tempEntity : {...entity},
     };
-    const listViewEntry = isGroupHeader ? tempEntry : {...originalEntry};
     listViewEntry.isGroupHeader = isGroupHeader;
     return listViewEntry;
   }

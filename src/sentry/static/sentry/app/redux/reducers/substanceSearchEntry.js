@@ -50,9 +50,10 @@ const substanceSearchEntry = (state = initialState, action) => {
       // a dictionary and then update the store's byIds as required.
       const byIds = {};
       const entryGenerator = new ListViewEntryGenerator();
-      for (const entry of action.substanceSearchEntries) {
-        const listViewEntry = entryGenerator.get(action.groupBy, entry);
-        byIds[listViewEntry.global_id] = listViewEntry;
+      const byIds = {};
+      for (const entity of action.fetchedEntities) {
+        const listViewEntry = entryGenerator.get(action.groupBy, entity);
+        byIds[listViewEntry.entity.global_id] = listViewEntry;
       }
       const visibleIds = Object.keys(byIds).map(String);
 

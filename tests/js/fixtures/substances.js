@@ -44,29 +44,33 @@ export function SubstanceSearchEntry(groupBy, id) {
   throw Error('Unknown groupBy: ' + groupBy);
 }
 
-function GroupedEntryFromReducer(groupBy, id) {
+function TempEntry(groupBy, id) {
   return {
     id,
     name: groupBy + id,
   };
 }
 
-function SubstanceEntryFromReducer(groupBy, id, isGroupHeader) {
+function ListViewEntryFromReducer(groupBy, id, isGroupHeader) {
   let entry = null;
+  let entity = null;
   if (!isGroupHeader) {
-    entry = SubstanceSearchEntry(groupBy, id);
+    entity = SubstanceSearchEntry(groupBy, id);
   } else {
-    entry = GroupedEntryFromReducer(groupBy, id);
+    entity = TempEntry(groupBy, id);
   }
-  entry.isGroupHeader = isGroupHeader;
+  entry = {
+    isGroupHeader,
+    entity,
+  };
   return entry;
 }
 
-export function SubstanceEntriesFromReducer(count, groupBy) {
+export function ListViewEntriesFromReducer(count, groupBy) {
   const ret = [];
   const isGroupHeader = groupBy !== 'substance';
   for (let i = 0; i < count; i++) {
-    ret.push(SubstanceEntryFromReducer(groupBy, i + 1, isGroupHeader));
+    ret.push(ListViewEntryFromReducer(groupBy, i + 1, isGroupHeader));
   }
   return ret;
 }
@@ -85,7 +89,7 @@ export function SubstanceSearchEntriesPageState(pageSize, groupBy) {
   const mockResponseNoGroup = TestStubs.SubstanceSearchEntries(pageSize, groupBy);
   const nextState = substanceSearchEntry(initialState, {
     type: 'SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS',
-    substanceSearchEntries: mockResponseNoGroup,
+    fetchedEntities: mockResponseNoGroup,
     groupBy,
   });
   return nextState;

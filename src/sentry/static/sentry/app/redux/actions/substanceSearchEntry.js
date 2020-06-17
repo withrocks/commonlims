@@ -31,14 +31,10 @@ export const substanceSearchEntriesGetRequest = (search, groupBy, cursor) => {
   };
 };
 
-export const substanceSearchEntriesGetSuccess = (
-  substanceSearchEntries,
-  link,
-  groupBy
-) => {
+export const substanceSearchEntriesGetSuccess = (fetchedEntities, link, groupBy) => {
   return {
     type: SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
-    substanceSearchEntries,
+    fetchedEntities,
     link,
     groupBy,
   };

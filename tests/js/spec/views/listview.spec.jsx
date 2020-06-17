@@ -7,18 +7,21 @@ describe('instantiate listview', function () {
   const oneSample = {
     dataById: {
       1: {
-        id: 1,
-        name: 'mysample',
-        location: {
-          container: {
-            name: 'mycontainer',
+        entity: {
+          global_id: 1,
+          name: 'mysample',
+          location: {
+            container: {
+              name: 'mycontainer',
+            },
+          },
+          properties: {
+            sample_type: {
+              value: 'Zombie brain',
+            },
           },
         },
-        properties: {
-          sample_type: {
-            value: 'Zombie brain',
-          },
-        },
+        isGroupHeader: false,
       },
     },
     visibleIds: [1],
@@ -27,8 +30,10 @@ describe('instantiate listview', function () {
   const oneSampleType = {
     dataById: {
       1: {
-        id: 1,
-        name: 'Zombie brain',
+        entity: {
+          global_id: 1,
+          name: 'Zombie brain',
+        },
         isGroupHeader: true,
       },
     },
@@ -39,22 +44,21 @@ describe('instantiate listview', function () {
     {
       Header: 'Sample name',
       id: 'name',
-      accessor: 'name',
-      aggregate: (vals) => '',
+      accessor: (d) => d.name,
     },
     {
       Header: 'Container',
       id: 'container',
-      accessor: (d) =>
-        d.isGroupHeader ? null : d.location ? d.location.container.name : '<No location>',
+      accessor: (d, isGroupHeader) =>
+        isGroupHeader ? null : d.location ? d.location.container.name : '<No location>',
     },
     {
       Header: 'Sample Type',
       id: 'sample_type',
-      accessor: (d) =>
-        d.isGroupHeader
+      accessor: (d, isGroupHeader) =>
+        isGroupHeader
           ? null
-          : d.properties.sample_type
+          : d.properties && d.properties.sample_type
           ? d.properties.sample_type.value
           : null,
     },
