@@ -11,6 +11,7 @@ import {
   SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_REQUEST,
   SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS,
   SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE,
+  SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED,
   SUBSTANCE_SEARCH_ENTRY_COLLAPSE,
   substanceSearchEntriesGetRequest,
   substanceSearchEntriesGetSuccess,
@@ -199,6 +200,45 @@ describe('substance redux actions', function () {
       expect(substanceSearchEntryExpandCollapseFailure('expand error')).toEqual(
         expectedAction
       );
+    });
+
+    it('should create an action to use cached substance entries at cached expand', async () => {
+      const expandedEntries = mockResponseNoGroup;
+      const store = mockStore({substances: []});
+
+      moxios.stubRequest(
+        '/api/0/organizations/lab/substances/?search=substance.sample_type:fang',
+        {
+          status: 200,
+          responseText: expandedEntries,
+          headers: [],
+        }
+      );
+
+      const parentEntry = {
+        entity: {
+          global_id: 'Parent-1',
+          name: 'fang',
+        },
+        children: {
+          isFetched: true,
+          ids: [],
+        },
+      };
+
+      const expectedActions = [
+        {
+          type: SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_REQUEST,
+          parentEntry,
+        },
+        {
+          type: SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED,
+          parentEntry,
+        },
+      ];
+
+      store.dispatch(substanceSearchEntryExpandCollapse(parentEntry));
+      expect(store.getActions()).toEqual(expectedActions);
     });
 
     it('should create an action to GET grouped substances', () => {

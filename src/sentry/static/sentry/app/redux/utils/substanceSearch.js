@@ -37,7 +37,7 @@ export class ListViewEntryGenerator {
     this.tempId = 1;
   }
 
-  get(groupBy, entity) {
+  wrap(entity, groupBy = 'substance') {
     const isGroupHeader = groupBy !== 'substance';
 
     let tempEntity = null;
@@ -52,6 +52,7 @@ export class ListViewEntryGenerator {
       entity: needTempEntry ? tempEntity : {...entity},
     };
     listViewEntry.isGroupHeader = isGroupHeader;
+
     return listViewEntry;
   }
 }

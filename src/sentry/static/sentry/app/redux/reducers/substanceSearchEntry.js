@@ -1,6 +1,6 @@
 import {Set} from 'immutable';
 import {ListViewEntryGenerator} from 'app/redux/utils/substanceSearch';
-import merge from 'lodash/merge';
+import {ExpandedState} from 'app/redux/utils/expandedState';
 import {
   SUBSTANCE_SEARCH_ENTRIES_GET_REQUEST,
   SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS,
@@ -10,6 +10,8 @@ import {
   SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_REQUEST,
   SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS,
   SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE,
+  SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED,
+  SUBSTANCE_SEARCH_ENTRY_COLLAPSE,
 } from '../actions/substanceSearchEntry';
 
 // NOTE: We export the initial state in order to use it in tests
@@ -38,7 +40,8 @@ function toggleSelectPage(state, doSelect) {
 }
 
 const substanceSearchEntry = (state = initialState, action) => {
-  const byIds = {};
+  const entryGenerator = new ListViewEntryGenerator();
+  const expandedState = new ExpandedState({...state.byIds}, [...state.visibleIds]);
   switch (action.type) {
     case SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_REQUEST:
       return {
@@ -49,19 +52,35 @@ const substanceSearchEntry = (state = initialState, action) => {
       };
     case SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS:
       const expandedByIds = {};
-      // WIP
       for (const entity of action.fetchedEntities) {
-        expandedByIds[entity.global_id] = {
-          entity,
-        };
+        expandedByIds[entity.global_id] = entryGenerator.wrap(entity);
       }
-      const visibleIds = Object.keys(byIds);
+      expandedState.expandEntry(action.parentEntry.entity.global_id, expandedByIds);
       return {
         ...state,
         errorMessage: null,
         loading: false,
-        byIds: merge({}, state.byIds, expandedByIds),
-        visibleIds,
+        byIds: expandedState.byIds,
+        visibleIds: expandedState.visibleIds,
+        pageLinks: action.link,
+      };
+    case SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED:
+      const cachedIds = action.parentEntry.children.cachedIds;
+      expandedState.expandCached(action.parentEntry.entity.global_id, cachedIds);
+      return {
+        ...state,
+        errorMessage: null,
+        loading: false,
+        visibleIds: expandedState.visibleIds,
+        pageLinks: action.link,
+      };
+    case SUBSTANCE_SEARCH_ENTRY_COLLAPSE:
+      expandedState.collapseEntry(action.parentEntry.entity.global_id);
+      return {
+        ...state,
+        errorMessage: null,
+        loading: false,
+        visibleIds: expandedState.visibleIds,
         pageLinks: action.link,
       };
     case SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE:
@@ -82,20 +101,19 @@ const substanceSearchEntry = (state = initialState, action) => {
     case SUBSTANCE_SEARCH_ENTRIES_GET_SUCCESS: {
       // The action provides us with the raw data as a list, here we turn it into
       // a dictionary and then update the store's byIds as required.
-      const entryGenerator = new ListViewEntryGenerator();
       const byIds = {};
       for (const entity of action.fetchedEntities) {
-        const listViewEntry = entryGenerator.get(action.groupBy, entity);
+        const listViewEntry = entryGenerator.wrap(entity, action.groupBy);
         byIds[listViewEntry.entity.global_id] = listViewEntry;
       }
-      const visibleIds2 = Object.keys(byIds).map(String);
+      const visibleIds = Object.keys(byIds).map(String);
 
       return {
         ...state,
         errorMessage: null,
         loading: false,
         byIds,
-        visibleIds: visibleIds2,
+        visibleIds,
         pageLinks: action.link,
       };
     }

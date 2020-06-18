@@ -1,6 +1,7 @@
 import substanceSearchEntry, {
   initialState,
 } from 'app/redux/reducers/substanceSearchEntry';
+import merge from 'lodash/merge';
 import {Set} from 'immutable';
 import {keyBy} from 'lodash';
 
@@ -239,6 +240,243 @@ describe('substance reducer', () => {
       ...initialState,
       loading: false,
       errorMessage: 'oopsiedoodle',
+    });
+  });
+
+  it('should handle SUBSTANCE_SEARCH_ENTRIES_EXPAND_SUCCESS', () => {
+    // Arrange
+    const parentEntry = {
+      entity: {
+        global_id: 'Container-2',
+        name: 'mycontainer',
+      },
+      children: {
+        isFetched: false,
+      },
+    };
+
+    const action = {
+      type: 'SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS',
+      fetchedEntities: mockResponseNoGroup,
+      link: 'some-link',
+      parentEntry,
+    };
+
+    const prevState = {
+      ...initialState,
+      visibleIds: ['Container-1', 'Container-2'],
+      byIds: {
+        'Container-2': parentEntry,
+      },
+      loading: true,
+      errorMessage: 'oops',
+    };
+
+    // Act
+    const nextState = substanceSearchEntry(prevState, action);
+
+    // Assert
+    const transformedEntries = mockResponseNoGroup.map((e) => {
+      return {
+        entity: e,
+        isGroupHeader: false,
+      };
+    });
+    const updatedParentEntry = {
+      ...parentEntry,
+      children: {
+        ...parentEntry.children,
+        isFetched: true,
+        cachedIds: mockResponseNoGroup.map((e) => {
+          return e.global_id;
+        }),
+      },
+    };
+    transformedEntries.push(updatedParentEntry);
+
+    const expectedByIds = keyBy(transformedEntries, (entry) => entry.entity.global_id);
+
+    expect(nextState).toEqual({
+      ...prevState,
+      errorMessage: null,
+      loading: false,
+      visibleIds: ['Container-1', 'Container-2', 'Substance-1', 'Substance-2'],
+      byIds: expectedByIds,
+      pageLinks: 'some-link',
+    });
+  });
+
+  it('should handle SUBSTANCE_SEARCH_ENTRIES_EXPAND_CACHED', () => {
+    // Arrange
+    const parentEntry = {
+      entity: {
+        global_id: 'Container-2',
+        name: 'mycontainer',
+      },
+      children: {
+        isFetched: true,
+        cachedIds: mockResponseNoGroup.map((e) => {
+          return e.global_id;
+        }),
+      },
+    };
+
+    const listViewEntries = mockResponseNoGroup.map((e) => {
+      return {
+        entity: e,
+        isGroupHeader: false,
+      };
+    });
+    listViewEntries.push(parentEntry);
+    const originalByIds = keyBy(listViewEntries, (e) => e.entity.global_id);
+
+    const prevState = {
+      ...initialState,
+      visibleIds: ['Container-1', 'Container-2'],
+      byIds: originalByIds,
+      loading: true,
+      errorMessage: 'oops',
+    };
+
+    const action = {
+      type: 'SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED',
+      parentEntry,
+    };
+
+    // Act
+    const nextState = substanceSearchEntry(prevState, action);
+
+    // Assert
+
+    expect(nextState).toEqual({
+      ...prevState,
+      errorMessage: null,
+      loading: false,
+      visibleIds: ['Container-1', 'Container-2', 'Substance-1', 'Substance-2'],
+      byIds: originalByIds,
+      pageLinks: undefined,
+    });
+  });
+
+  it('should handle SUBSTANCE_SEARCH_ENTRIES_COLLAPSE', () => {
+    // Arrange
+    const parentEntry = {
+      entity: {
+        global_id: 'Container-2',
+        name: 'mycontainer',
+      },
+      children: {
+        isFetched: true,
+        isExpanded: true,
+        cachedIds: mockResponseNoGroup.map((e) => {
+          return e.global_id;
+        }),
+      },
+    };
+
+    const listViewEntries = mockResponseNoGroup.map((e) => {
+      return {
+        entity: e,
+        isGroupHeader: false,
+      };
+    });
+    listViewEntries.push(parentEntry);
+    const byIds = keyBy(listViewEntries, (e) => e.entity.global_id);
+
+    const prevState = {
+      ...initialState,
+      visibleIds: ['Container-1', 'Container-2', 'Substance-1', 'Substance-2'],
+      byIds,
+      loading: true,
+      errorMessage: 'oops',
+    };
+
+    const action = {
+      type: 'SUBSTANCE_SEARCH_ENTRY_COLLAPSE',
+      parentEntry,
+    };
+
+    // Act
+    const nextState = substanceSearchEntry(prevState, action);
+
+    // Assert
+
+    expect(nextState).toEqual({
+      ...prevState,
+      errorMessage: null,
+      loading: false,
+      visibleIds: ['Container-1', 'Container-2'],
+      byIds: byIds,
+      pageLinks: undefined,
+    });
+  });
+
+  it.skip('should use cache at second expand event', () => {
+    // Arrange
+    const parentEntry = {
+      entity: {
+        global_id: 'Container-2',
+        name: 'mycontainer',
+      },
+      children: {
+        isFetched: false,
+      },
+    };
+    const firstAction = {
+      type: 'SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS',
+      expandedEntries: mockResponseNoGroup,
+      link: 'some-link',
+      parentEntry,
+    };
+    const originalState = {
+      ...initialState,
+      visibleIds: ['Container-1', 'Container-2'],
+      byIds: {
+        'Container-2': parentEntry,
+      },
+      loading: true,
+      errorMessage: 'oops',
+    };
+
+    const fetchedState = substanceSearchEntry(originalState, firstAction);
+
+    const cachedParent = fetchedState.byIds[parentEntry.entity.global_id];
+    const cachedAction = {
+      type: 'SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED',
+      parentEntry: cachedParent,
+    };
+    // Act
+    const expandedState = substanceSearchEntry(fetchedState, cachedAction);
+
+    // Assert
+    const transformedEntries = mockResponseNoGroup.map((e) => {
+      return {
+        entity: e,
+        isGroupHeader: false,
+      };
+    });
+    const updatedParentEntry = {
+      ...parentEntry,
+      children: {
+        ...parentEntry.children,
+        isFetched: true,
+        cachedIds: mockResponseNoGroup.map((e) => {
+          return e.global_id;
+        }),
+      },
+    };
+    transformedEntries.push(updatedParentEntry);
+
+    const expectedByIds = keyBy(transformedEntries, (entry) => entry.entity.global_id);
+
+    console.log(expandedState.visibleIds);
+    expect(expandedState).toEqual({
+      ...originalState,
+      errorMessage: null,
+      loading: false,
+      visibleIds: ['Container-1', 'Container-2', 'Substance-1', 'Substance-2'],
+      byIds: expectedByIds,
+      pageLinks: undefined,
     });
   });
 

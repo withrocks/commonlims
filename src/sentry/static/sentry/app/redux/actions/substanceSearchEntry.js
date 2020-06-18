@@ -27,6 +27,8 @@ export const SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS =
   'SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS';
 export const SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE =
   'SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE';
+export const SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED =
+  'SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED';
 export const SUBSTANCE_SEARCH_ENTRY_COLLAPSE = 'SUBSTANCE_SEARCH_ENTRY_COLLAPSE';
 
 export const substanceSearchEntryExpandCollapseRequest = (parentEntry) => {
@@ -62,12 +64,19 @@ export const substanceSearchEntryCollapse = (parentEntry) => {
   };
 };
 
+export const substanceSearchEntryExpandCached = (parentEntry) => {
+  return {
+    type: SUBSTANCE_SEARCH_ENTRY_EXPAND_CACHED,
+    parentEntry,
+  };
+};
+
 export const substanceSearchEntryExpandCollapse = (parentEntry) => (dispatch) => {
   dispatch(substanceSearchEntryExpandCollapseRequest(parentEntry));
   if (parentEntry.children.isExpanded) {
     return dispatch(substanceSearchEntryCollapse(parentEntry));
   } else if (parentEntry.children.isFetched) {
-    return dispatch(substanceSearchEntriesExpandCached(parentEntry));
+    return dispatch(substanceSearchEntryExpandCached(parentEntry));
   } else {
     const request = {
       params: {
