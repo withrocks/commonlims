@@ -35,6 +35,11 @@ describe('instantiate listview', function () {
           name: 'Zombie brain',
         },
         isGroupHeader: true,
+        children: {
+          isFetched: false,
+          isExpanded: false,
+          cachedIds: [],
+        },
       },
     },
     visibleIds: [1],

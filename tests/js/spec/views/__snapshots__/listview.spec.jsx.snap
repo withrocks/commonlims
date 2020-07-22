@@ -25,6 +25,11 @@ ListView {
     ],
     "dataById": Object {
       "1": Object {
+        "children": Object {
+          "cachedIds": Array [],
+          "isExpanded": false,
+          "isFetched": false,
+        },
         "entity": Object {
           "global_id": 1,
           "name": "Zombie brain",
@@ -75,6 +80,11 @@ ListView {
         dataById={
           Object {
             "1": Object {
+              "children": Object {
+                "cachedIds": Array [],
+                "isExpanded": false,
+                "isFetched": false,
+              },
               "entity": Object {
                 "global_id": 1,
                 "name": "Zombie brain",
@@ -131,7 +141,9 @@ ListView {
               </thead>
               <tbody>
                 <tr>
-                  <td>
+                  <td
+                    onClick={[Function]}
+                  >
                     <CaretRight />
                   </td>
                   <td

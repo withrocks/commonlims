@@ -7,6 +7,7 @@ import {
   substanceSearchEntriesGet,
   substanceSearchEntriesToggleSelectAll,
   substanceSearchEntryToggleSelect,
+  substanceSearchEntryExpandCollapse,
 } from 'app/redux/actions/substanceSearchEntry';
 import {t} from 'app/locale';
 import ListFilters from 'app/components/listFilters';
@@ -193,6 +194,7 @@ class Substances extends React.Component {
             toggleAll={this.toggleAll}
             toggleSingle={this.props.substanceSearchEntryToggleSelect}
             listActionBar={actionBar}
+            expandCollapse={this.props.substanceSearchEntryExpandCollapse}
           />
 
           {this.props.substanceSearchEntry.paginationEnabled &&
@@ -215,6 +217,7 @@ Substances.propTypes = {
   groupBy: PropTypes.string.isRequired,
   substanceSearchEntriesGet: PropTypes.func.isRequired,
   substanceSearchEntriesToggleSelectAll: PropTypes.func.isRequired,
+  substanceSearchEntryExpandCollapse: PropTypes.func.isRequired,
   byIds: PropTypes.object,
   substanceSearchEntryToggleSelect: PropTypes.func.isRequired,
   substanceSearchEntry: PropTypes.object,
@@ -236,6 +239,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(substanceSearchEntriesToggleSelectAll(doSelect)),
   substanceSearchEntryToggleSelect: (id, doSelect) =>
     dispatch(substanceSearchEntryToggleSelect(id, doSelect)),
+  substanceSearchEntryExpandCollapse: (parentEntry) =>
+    dispatch(substanceSearchEntryExpandCollapse(parentEntry)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Substances);
