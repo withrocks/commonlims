@@ -72,6 +72,7 @@ const substanceSearchEntry = (state = initialState, action) => {
         errorMessage: null,
         loading: false,
         visibleIds: expandedState.visibleIds,
+        byIds: expandedState.byIds,
         pageLinks: action.link,
       };
     case SUBSTANCE_SEARCH_ENTRY_COLLAPSE:
@@ -81,6 +82,7 @@ const substanceSearchEntry = (state = initialState, action) => {
         errorMessage: null,
         loading: false,
         visibleIds: expandedState.visibleIds,
+        byIds: expandedState.byIds,
         pageLinks: action.link,
       };
     case SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_FAILURE:

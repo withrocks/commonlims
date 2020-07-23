@@ -161,6 +161,11 @@ describe('substance reducer', () => {
           name: 'my_sample_type',
         },
         isGroupHeader: true,
+        children: {
+          isFetched: false,
+          isExpanded: false,
+          cachedIds: [],
+        },
       },
     ];
 
@@ -207,6 +212,11 @@ describe('substance reducer', () => {
           name: 'mycontainer',
         },
         isGroupHeader: true,
+        children: {
+          isFetched: false,
+          isExpanded: false,
+          cachedIds: [],
+        }
       },
     ];
 
@@ -287,6 +297,7 @@ describe('substance reducer', () => {
       children: {
         ...parentEntry.children,
         isFetched: true,
+        isExpanded: true,
         cachedIds: mockResponseNoGroup.map((e) => {
           return e.global_id;
         }),
@@ -315,6 +326,7 @@ describe('substance reducer', () => {
       },
       children: {
         isFetched: true,
+        isExpanded: false,
         cachedIds: mockResponseNoGroup.map((e) => {
           return e.global_id;
         }),
@@ -348,12 +360,22 @@ describe('substance reducer', () => {
 
     // Assert
 
+    const updatedByIds = {
+      ...originalByIds,
+    };
+    updatedByIds[parentEntry.entity.global_id] = {
+      ...parentEntry,
+      children: {
+        ...parentEntry.children,
+        isExpanded: true,
+      },
+    };
     expect(nextState).toEqual({
       ...prevState,
       errorMessage: null,
       loading: false,
       visibleIds: ['Container-1', 'Container-2', 'Substance-1', 'Substance-2'],
-      byIds: originalByIds,
+      byIds: updatedByIds,
       pageLinks: undefined,
     });
   });
@@ -398,15 +420,23 @@ describe('substance reducer', () => {
 
     // Act
     const nextState = substanceSearchEntry(prevState, action);
-
+    const updatedByIds = {
+      ...byIds,
+    };
+    updatedByIds[parentEntry.entity.global_id] = {
+      ...parentEntry,
+      children: {
+        ...parentEntry.children,
+        isExpanded: false,
+      },
+    };
     // Assert
-
     expect(nextState).toEqual({
       ...prevState,
       errorMessage: null,
       loading: false,
       visibleIds: ['Container-1', 'Container-2'],
-      byIds: byIds,
+      byIds: updatedByIds,
       pageLinks: undefined,
     });
   });
