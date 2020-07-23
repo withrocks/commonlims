@@ -102,6 +102,34 @@ class SubstancesTest(APITestCase):
 
         asserts(stone1, data_by_id[stone1.id])
 
+    @pytest.mark.dev_edvard
+    def test_filter_substances_on_property__with_spaces(self):
+        stone1 = self.create_gemstone(color='red red')
+        self.create_gemstone(color='blue')
+
+        url = reverse('clims-api-0-substances', args=(self.organization.name,))
+        self.login_as(self.user)
+        response = self.client.get(url + '?search=substance.color:red red')
+
+        assert response.status_code == 200, response.content
+        assert len(response.data) == 1
+        data_by_id = {int(entry['id']): entry for entry in response.data}
+
+        def asserts(sample, response):
+            properties = response.pop('properties')
+            assert properties['color']['value'] == sample.properties['color'].value
+            assert response == dict(
+                name=sample.name,
+                version=sample.version,
+                id=sample.id,
+                type_full_name=sample.type_full_name,
+                location=None,
+                global_id="Substance-{}".format(sample.id),
+                container_index=None,
+            )
+
+        asserts(stone1, data_by_id[stone1.id])
+
     def test_post_substance(self):
         # Setup
         extensible_type = self.register_extensible(GemstoneSample)

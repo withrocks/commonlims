@@ -192,6 +192,9 @@ class BaseExtensibleService(object):
 
 
 class BaseQueryBuilder:
+    # TODO: decide internal query separators
+    QUERY_SEPARATOR = "&&"
+
     def __init__(self, query_from_url):
         self.order_by = None
         self.query_from_url = query_from_url
@@ -215,10 +218,11 @@ class BaseQueryBuilder:
         pass
 
     def _parse_query_from_url(self):
+
         query = self.query_from_url.strip() if self.query_from_url else []
         if len(query) == 0:
             return None, None
-        query = query.split(" ")
+        query = query.split(BaseQueryBuilder.QUERY_SEPARATOR)
 
         if len(query) > 1:
             raise NotImplementedError("Complex queries are not yet supported")
