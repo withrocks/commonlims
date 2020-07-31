@@ -216,7 +216,7 @@ describe('substance reducer', () => {
           isFetched: false,
           isExpanded: false,
           cachedIds: [],
-        }
+        },
       },
     ];
 

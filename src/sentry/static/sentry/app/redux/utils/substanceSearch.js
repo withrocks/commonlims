@@ -53,15 +53,14 @@ export class ListViewEntryGenerator {
     };
     listViewEntry.isGroupHeader = isGroupHeader;
 
-    if (isGroupHeader){
+    if (isGroupHeader) {
       listViewEntry.children = {
         isFetched: false,
         isExpanded: false,
         cachedIds: [],
       };
-    };
+    }
 
     return listViewEntry;
-
   }
 }
