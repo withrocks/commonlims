@@ -12,3 +12,7 @@ class WorkbatchService:
     def get_step_template(self, name):
         from clims.utils import single
         return single([step for step in self.step_templates if step.name == name])
+
+
+class WorkbatchBase:
+    pass
