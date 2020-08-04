@@ -23,8 +23,6 @@ class TriggerScriptEndpoint(OrganizationEndpoint):
         step_name = serializer.validated_data.get('name')
         event_type = serializer.validated_data.get('event_type')
         event_tag = serializer.validated_data.get('event_tag')
-
-        print('step name:{}'.format(step_name))
         step_cls = self.app.workbatches.get_step_template(step_name)
         step = step_cls()
         step.trigger_script(event_type, event_tag, None)
