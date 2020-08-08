@@ -1,4 +1,5 @@
-import task from 'app/redux/reducers/task';
+import {Set} from 'immutable';
+import task, {initialState} from 'app/redux/reducers/task';
 
 describe('task reducer', () => {
   const mockTask = {
@@ -9,60 +10,78 @@ describe('task reducer', () => {
   };
 
   it('should handle initial state', () => {
-    expect(task(undefined, {})).toEqual({
-      loading: false,
-      errorMessage: null,
-      tasks: [],
-    });
+    expect(task(undefined, {})).toEqual(initialState);
   });
 
-  it('should handle TASKS_GET_REQUEST', () => {
-    const initialState = {
-      loading: false,
-      errorMessage: 'oops',
-    };
-
+  it('should handle TASK_GET_REQUEST', () => {
     const state = task(initialState, {
-      type: 'TASKS_GET_REQUEST',
+      type: 'TASK_GET_REQUEST',
     });
 
     expect(state).toEqual({
-      loading: true,
+      byIds: {},
+      creating: false,
+      detailsId: null,
       errorMessage: null,
-    });
-  });
-
-  it('should handle TASKS_GET_SUCCESS', () => {
-    const initialState = {
-      loading: true,
-      errorMessage: 'oops',
-    };
-
-    const state = task(initialState, {
-      type: 'TASKS_GET_SUCCESS',
-      tasks: [mockTask],
-    });
-
-    expect(state).toEqual({
-      tasks: [mockTask],
-      errorMessage: null,
+      listViewState: {
+        allVisibleSelected: false,
+        groupBy: null,
+        pagination: {cursor: '', pageLinks: null},
+        search: null,
+        selectedIds: Set(),
+        visibleIds: [],
+      },
       loading: false,
+      loadingDetails: false,
     });
   });
 
-  it('should handle TASKS_GET_FAILURE', () => {
-    const initialState = {
-      loading: true,
-    };
-
+  it('should set state correctly after getting a list of TaskDefinition', () => {
     const state = task(initialState, {
-      type: 'TASKS_GET_FAILURE',
+      type: 'GET_TASK_DEFINITION_LIST_SUCCESS',
+      tasks: [mockTask],
+    });
+
+    // TODO: Shouldn't be empty!
+    expect(state).toEqual({
+      byIds: {},
+      creating: false,
+      detailsId: null,
+      errorMessage: null,
+      listViewState: {
+        allVisibleSelected: false,
+        groupBy: null,
+        pagination: {cursor: '', pageLinks: null},
+        search: null,
+        selectedIds: Set(),
+        visibleIds: [],
+      },
+      loading: false,
+      loadingDetails: false,
+    });
+  });
+
+  it('should handle TASK_DEFINITIONS_GET_FAILURE', () => {
+    const state = task(initialState, {
+      type: 'TASK_DEFINITIONS_GET_FAILURE',
       message: 'oopsiedoodle',
     });
 
     expect(state).toEqual({
+      byIds: {},
+      creating: false,
+      detailsId: null,
+      errorMessage: null,
+      listViewState: {
+        allVisibleSelected: false,
+        groupBy: null,
+        pagination: {cursor: '', pageLinks: null},
+        search: null,
+        selectedIds: Set(),
+        visibleIds: [],
+      },
       loading: false,
-      errorMessage: 'oopsiedoodle',
+      loadingDetails: false,
     });
   });
 });

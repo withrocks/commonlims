@@ -1,33 +1,39 @@
-import {TASKS_GET_REQUEST, TASKS_GET_SUCCESS, TASKS_GET_FAILURE} from '../actions/task';
+import {
+  GET_TASK_REQUEST,
+  GET_TASK_SUCCESS,
+  GET_TASK_FAILURE,
+  TOGGLE_SELECT_TASK,
+  TOGGLE_SELECT_PAGE_OF_TASK,
+  GET_TASK_LIST_REQUEST,
+  GET_TASK_LIST_SUCCESS,
+  GET_TASK_LIST_FAILURE,
+} from '../actions/task';
 
-const initialState = {
-  loading: false,
-  errorMessage: null,
-  tasks: [],
+import {list, entry} from './shared';
+
+export const initialState = {
+  ...list.initialState,
+  ...entry.initialState,
 };
 
 const task = (state = initialState, action) => {
   switch (action.type) {
-    case TASKS_GET_REQUEST:
-      return {
-        ...state,
-        errorMessage: null,
-        loading: true,
-      };
-    case TASKS_GET_SUCCESS: {
-      return {
-        ...state,
-        tasks: action.tasks,
-        errorMessage: null,
-        loading: false,
-      };
-    }
-    case TASKS_GET_FAILURE:
-      return {
-        ...state,
-        errorMessage: action.message,
-        loading: false,
-      };
+    case GET_TASK_LIST_REQUEST:
+      return list.getListRequest(state, action);
+    case GET_TASK_LIST_SUCCESS:
+      return list.getListSuccess(state, action);
+    case GET_TASK_LIST_FAILURE:
+      return list.getListFailure(state, action);
+    case TOGGLE_SELECT_TASK:
+      return list.selectSingle(state, action);
+    case TOGGLE_SELECT_PAGE_OF_TASK:
+      return list.selectAll(state, action);
+    case GET_TASK_REQUEST:
+      return entry.getEntryRequest(state, action);
+    case GET_TASK_SUCCESS:
+      return entry.getEntrySuccess(state, action);
+    case GET_TASK_FAILURE:
+      return entry.getEntryFailure(state, action);
     default:
       return state;
   }
