@@ -6,7 +6,7 @@ describe('taskDefinition reducer, list protocol', () => {
   it('has expected state after requesting getting a list', () => {
     const requested = taskDefinition(
       initialState,
-      taskDefinitionActions.getListRequest()
+      taskDefinitionActions.getListRequest('search', 'groupBy', 'cursor')
     );
     const expected = {
       loading: true,
@@ -16,11 +16,11 @@ describe('taskDefinition reducer, list protocol', () => {
         allVisibleSelected: false,
         visibleIds: [],
         selectedIds: Set(),
-        search: null,
-        groupBy: null,
+        search: 'search',
+        groupBy: 'groupBy',
         pagination: {
           pageLinks: null,
-          cursor: null,
+          cursor: 'cursor',
         },
       },
       creating: false,
@@ -33,12 +33,12 @@ describe('taskDefinition reducer, list protocol', () => {
   it('expected state after ListSuccess', () => {
     const requested = taskDefinition(
       initialState,
-      taskDefinitionActions.getListRequest()
+      taskDefinitionActions.getListRequest('search', 'groupBy', 'cursor')
     );
     const entries = [TestStubs.TaskDefinition(1), TestStubs.TaskDefinition(2)];
     const succeeded = taskDefinition(
       requested,
-      taskDefinitionActions.getListSuccess(entries)
+      taskDefinitionActions.getListSuccess(entries, 'pageLinks')
     );
 
     const expected = {
@@ -52,11 +52,11 @@ describe('taskDefinition reducer, list protocol', () => {
         allVisibleSelected: false,
         visibleIds: [entries[0].id, entries[1].id],
         selectedIds: Set(),
-        search: null,
-        groupBy: null,
+        search: 'search',
+        groupBy: 'groupBy',
         pagination: {
-          pageLinks: null,
-          cursor: null,
+          pageLinks: 'pageLinks',
+          cursor: 'cursor',
         },
       },
       creating: false,
