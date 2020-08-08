@@ -109,7 +109,11 @@ class ListView extends React.Component {
   getDisplayCell(entryId, header) {
     const row = this.props.dataById[entryId];
     if (typeof header.accessor === 'function') {
-      return header.accessor(row.entity, row.isGroupHeader);
+      if (row.isGroupHeader !== undefined) {
+        return header.accessor(row.entity, row.isGroupHeader);
+      } else {
+        return header.accessor(row);
+      }
     }
     return row[header.accessor];
   }
