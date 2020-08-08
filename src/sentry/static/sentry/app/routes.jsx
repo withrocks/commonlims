@@ -23,7 +23,8 @@ import errorHandler from 'app/utils/errorHandler';
 import SubstancesContainer from 'app/views/substances/index';
 import ProjectsContainer from 'app/views/projects/index';
 import WorkBatchListContainer from 'app/views/workBatchList/index';
-import TaskList from 'app/views/taskList/index';
+import TaskDefinitionsContainer from 'app/views/taskDefinitions/index';
+import TasksContainer from 'app/views/tasks/index';
 import WorkBatchDetailsContainer from 'app/views/workBatchDetails/organization/index';
 
 function appendTrailingSlash(nextState, replace) {
@@ -596,7 +597,11 @@ function routes() {
         <Route component={errorHandler(OrganizationRoot)}>
           <IndexRoute component={errorHandler(SubstancesContainer)} />
 
-          <Route path="tasks/" component={errorHandler(TaskList)} />
+          <Route path="tasks/" component={errorHandler(TaskDefinitionsContainer)} />
+          <Route
+            path="tasks/:processKey/:taskKey/"
+            component={errorHandler(TasksContainer)}
+          />
           <Route path="workbatches/" component={errorHandler(WorkBatchListContainer)} />
           <Route path="substances/" component={errorHandler(SubstancesContainer)} />
 

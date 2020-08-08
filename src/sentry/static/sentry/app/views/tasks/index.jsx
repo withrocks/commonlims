@@ -9,7 +9,7 @@ import {
   toggleSelectPageOfTask,
 } from 'app/redux/actions/task';
 import {workBatchActions} from 'app/redux/actions/workBatch';
-import {getTaskDefinition} from 'app/redux/actions/taskDefinition';
+import {taskDefinitionActions} from 'app/redux/actions/taskDefinition';
 import ClimsTypes from 'app/climsTypes';
 
 class TasksContainer extends React.Component {
@@ -22,7 +22,7 @@ class TasksContainer extends React.Component {
 
     // If we don't have the task definition, we load that too:
     // TODO: check if we have it first
-    this.props.getTaskDefinition(this.props.organization, processKey, taskKey);
+    this.props.getTaskDefinition(processKey, taskKey);
     this.props.getTasks(this.props.organization, processKey, taskKey);
   }
 
@@ -41,12 +41,12 @@ function getColumns() {
       Header: 'Sample name',
       id: 'name',
       // TODO: javascriptify tracked_object => trackedObject
-      accessor: task => task.tracked_object.name,
+      accessor: (task) => task.tracked_object.name,
     },
     {
       Header: 'Container',
       id: 'container',
-      accessor: task =>
+      accessor: (task) =>
         task.tracked_object.location
           ? task.tracked_object.location.container.name
           : '<No location>',
@@ -69,7 +69,7 @@ TasksContainer.propTypes = {
   }).isRequired,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     // task
     listViewState: state.task.listViewState,
@@ -91,15 +91,15 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   getTasks: (org, processDefinitionKey, taskDefinitionKey) =>
     dispatch(getTaskList(org, processDefinitionKey, taskDefinitionKey)),
-  toggleSingle: id => dispatch(toggleSelectTask(id)),
+  toggleSingle: (id) => dispatch(toggleSelectTask(id)),
   toggleAll: () => dispatch(toggleSelectPageOfTask()),
   createWorkBatch: (org, tasks, redirect) =>
     dispatch(workBatchActions.create(org, tasks, redirect)),
-  getTaskDefinition: (taskDefinitionKey, processDefinitionKey) =>
-    dispatch(getTaskDefinition(taskDefinitionKey, processDefinitionKey)),
+  getTaskDefinition: (process, task) =>
+    dispatch(taskDefinitionActions.get(process + '/' + task)),
 });
 
 export default withOrganization(
