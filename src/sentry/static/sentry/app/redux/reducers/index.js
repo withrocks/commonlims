@@ -9,6 +9,7 @@ import tag from './tag';
 import task from './task';
 import taskDefinition from './taskDefinition';
 import workBatch from './workBatch';
+import workBatchDetails from './workBatchDetails';
 import projectSearchEntry from './projectSearchEntry';
 
 export default combineReducers({
@@ -21,5 +22,6 @@ export default combineReducers({
   task,
   taskDefinition,
   workBatch,
+  workBatchDetails,
   projectSearchEntry,
 });
