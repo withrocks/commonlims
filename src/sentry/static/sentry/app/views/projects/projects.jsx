@@ -8,6 +8,8 @@ import ListView from 'app/components/listView';
 import SentryTypes from 'app/sentryTypes';
 import Pagination from 'app/components/pagination';
 import {browserHistory} from 'react-router';
+import ListActionBar from 'app/components/listActionBar';
+import CreateProjectButton from 'app/views/projects/createProjectButton';
 
 class Projects extends React.Component {
   constructor(props) {
@@ -78,6 +80,18 @@ class Projects extends React.Component {
     // TODO Fix this later (should be set through redux )
   }
 
+  listActionBar() {
+    return (
+      <ListActionBar>
+        <div className="btn-group">
+          <CreateProjectButton className="btn btn-sm btn-default" disabled={false}>
+            {t('Create project')}
+          </CreateProjectButton>
+        </div>
+      </ListActionBar>
+    );
+  }
+
   render() {
     // TODO: Rename css classes to something else than stream
     const groupOptions = [
@@ -87,6 +101,7 @@ class Projects extends React.Component {
     ];
 
     const {groupBy, query, byIds, visibleIds, loading} = this.props.projectSearchEntry;
+    const actionBar = this.listActionBar();
 
     return (
       <div className="stream-row">
@@ -109,6 +124,7 @@ class Projects extends React.Component {
             canSelect={false}
             visibleIds={visibleIds}
             loading={loading}
+            listActionBar={actionBar}
           />
           {this.props.projectSearchEntry.paginationEnabled &&
             this.props.projectSearchEntry.pageLinks && (

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {browserHistory} from 'react-router';
-//import {substancesGet} from 'app/redux/actions/substance';
 import {
   substanceSearchEntriesGet,
   substanceSearchEntriesToggleSelectAll,
@@ -16,6 +15,8 @@ import SentryTypes from 'app/sentryTypes';
 import ListActionBar from 'app/components/listActionBar';
 import Pagination from 'app/components/pagination';
 import {showRounded} from 'app/utils/formatters';
+import UploadSubstancesButton from 'app/views/substances/uploadSubstancesButton';
+import AssignToWorkflowButton from 'app/components/substances/assignToWorkflow';
 
 class Substances extends React.Component {
   constructor(props) {
@@ -139,12 +140,21 @@ class Substances extends React.Component {
 
   listActionBar(canAssignToWorkflow, orgId) {
     return (
-      <ListActionBar
-        realtimeActive={false}
-        query=""
-        orgId={orgId}
-        canAssignToWorkflow={canAssignToWorkflow}
-      />
+      <ListActionBar>
+        <div className="btn-group">
+          <UploadSubstancesButton className="btn btn-sm btn-default" disabled={false}>
+            {t('Import samples')}
+          </UploadSubstancesButton>
+        </div>
+        <div className="btn-group">
+          <AssignToWorkflowButton
+            className="btn btn-sm btn-default"
+            disabled={!canAssignToWorkflow}
+          >
+            {t('Assign to workflow')}
+          </AssignToWorkflowButton>
+        </div>
+      </ListActionBar>
     );
   }
 
