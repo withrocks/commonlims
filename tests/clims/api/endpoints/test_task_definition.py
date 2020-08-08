@@ -5,7 +5,7 @@ from clims.plugins.demo.dnaseq import DemoDnaSeqPlugin
 
 
 class TaskDefinitionTest(APITestCase):
-    endpoint = 'clims-api-0-task-definition'
+    endpoint = 'clims-api-0-task-definitions'
 
     def setUp(self):
         self.clean_workflow_engine_state()

@@ -56,9 +56,9 @@ def url(endpoint, *args, **kwargs):
 urlpatterns = patterns(
     '',
     # Workflow
-    url(r'^organizations/{org}/task-definition/$',
+    url(r'^organizations/{org}/task-definitions/$',
         TaskDefinitionEndpoint.as_view(),
-        name='clims-api-0-task-definition'),
+        name='clims-api-0-task-definitions'),
     url(r'^organizations/{org}/workflow/(?P<workflow_endpoint>[^\/]+)/$',
         WorkflowEndpoint.as_view(),
         name='clims-api-0-workflow-root'),
