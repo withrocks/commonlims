@@ -1,39 +1,29 @@
 export function ProcessDefinitionField(name) {
   return {
     name,
-    type: 'select',
-    label: name,
-    choices: [name + '-1', name + '-2'],
-    help: 'help-' + name,
-    required: true,
+    required: false,
+    choices: [],
+    help: null,
+    type: 'textarea',
+    display_name: 'Comment',
+  };
+}
+
+export function Preset(name, processDefinitionId, variables) {
+  return {
+    name,
+    variables,
+    processDefinitionId,
   };
 }
 
 export function ProcessDefinition(id) {
   return {
-    id,
-    fields: [ProcessDefinitionField('sequencer'), ProcessDefinitionField('sample_type')],
-  };
-}
-
-export function Preset(name, processDefinitionId, post) {
-  return {
-    processDefinitionId,
-    variables: {
-      sequencer: 'sequencer-' + post,
-      sample_type: 'sample_type-' + post,
-    },
-    name,
-  };
-}
-
-export function ProcessDefinitions() {
-  return {
-    // TODO: Rename to process => processDefinition
-    processDefinitions: [
-      ProcessDefinition('ProcessDef1'),
-      ProcessDefinition('ProcessDef2'),
+    id: 'ProcessDefinition' + id,
+    fields: [ProcessDefinitionField(1), ProcessDefinitionField(2)],
+    presets: [
+      Preset('preset1', 'ProcessDefinition' + id, {a: '1', b: '2'}),
+      Preset('preset2', 'ProcessDefinition' + id, {a: '3', b: '4'}),
     ],
-    presets: [Preset('Preset1', 'ProcessDef1', 1), Preset('Preset2', 'ProcessDef2', 2)],
   };
 }

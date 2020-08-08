@@ -99,6 +99,10 @@ export function createEntrySuccess(state, action) {
   return {
     ...state,
     creating: false,
+    byIds: {
+      ...state.byIds,
+      [action.entry.id]: action.entry,
+    },
   };
 }
 

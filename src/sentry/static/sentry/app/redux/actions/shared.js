@@ -64,7 +64,6 @@ const acCreateFailure = (resource) =>
 
 const acCreate = (resource, urlTemplate) => {
   return (org, data, redirect) => (dispatch) => {
-    console.log('HERE', data, data['tasks']);
     dispatch(acCreateRequest(resource)());
 
     const api = new Client();
