@@ -16,11 +16,15 @@ class ProcessAssignmentsEndpoint(Endpoint):
         """
 
         # TODO-auth: Ensure that the user is only assigning samples that are under the organization
-        substances = request.data["substances"]
+
+        # Entities is a list of global ids (e.g. Substance-100)
+        entities = request.data["entities"]
         definition = request.data["definitionId"]
         variables = request.data["variables"]
 
         assignments = list()
-        assignments += self.app.workflows.batch_assign_substances(substances, definition, request.user, variables)
+
+        assignments += self.app.workflows.batch_assign(
+            entities, definition, request.user, variables)
 
         return Response({"assignments": len(assignments)}, status=201)
