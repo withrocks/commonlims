@@ -53,6 +53,8 @@ const AssignToWorkflowButton = createReactClass({
     processDefinition: ClimsTypes.List.isRequired,
     processAssignment: ClimsTypes.ProcessAssignmentStore.isRequired,
     processAssignmentsSetEditing: PropTypes.func,
+
+    organization: ClimsTypes.Organization.isRequired,
   },
 
   getInitialState() {
@@ -68,7 +70,7 @@ const AssignToWorkflowButton = createReactClass({
   },
 
   UNSAFE_componentWillMount() {
-    this.props.getProcessDefinitionList();
+    this.props.getProcessDefinitionList(this.props.organization);
   },
 
   renderDiagram() {
@@ -266,7 +268,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  getProcessDefinitionList: () => dispatch(processDefinitionActions.getList()),
+  getProcessDefinitionList: (org) => dispatch(processDefinitionActions.getList(org)),
   processAssignSelectPreset: preset => dispatch(processAssignSelectPreset(preset)),
   processAssignSelectProcess: process => dispatch(processAssignSelectProcess(process)),
   processAssignSetVariable: (key, value) =>
