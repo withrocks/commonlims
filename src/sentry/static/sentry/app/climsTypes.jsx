@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 import {Set} from 'immutable';
 
+// Export all auto generated resources:
+import {Resources} from 'app/propTypes/resources';
+
 export const Pagination = PropTypes.shape({
   pageLinks: PropTypes.string.isRequired, // The links returned by the backend
   cursor: PropTypes.string.isRequired,
@@ -17,7 +20,7 @@ export const ListViewState = PropTypes.shape({
 });
 
 // All lists require this data shape
-export const List = PropTypes.shape({
+export const List = {
   byIds: PropTypes.object.isRequired,
   listViewState: ListViewState.isRequired,
 };
@@ -49,9 +52,14 @@ export const WorkBatch = PropTypes.shape({
   tabs: PropTypes.array.isRequired, // TODO: describe
 });
 
+export const ProcessAssignmentStore = PropTypes.object; // TODO!
+
 const ClimsTypes = {
+  Organization,
   List,
   WorkBatch,
+  ProcessAssignmentStore,
+  ...Resources,
 };
 
 export default ClimsTypes;
