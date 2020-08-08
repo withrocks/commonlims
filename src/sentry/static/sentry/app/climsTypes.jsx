@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import {Set} from 'immutable';
 
 export const Pagination = PropTypes.shape({
   pageLinks: PropTypes.string.isRequired, // The links returned by the backend
@@ -9,8 +10,8 @@ export const Pagination = PropTypes.shape({
 // The data itself is expected to by in a dictionary called byIds.
 export const ListViewState = PropTypes.shape({
   visibleIds: PropTypes.array.isRequired,
-  selectedIds: PropTypes.array.isRequired,
-  groupBy: PropTypes.string.isRequired,
+  selectedIds: PropTypes.instanceOf(Set).isRequired,
+  groupBy: PropTypes.string,
   search: PropTypes.string.isRequired,
   pagination: Pagination.isRequired,
 });
