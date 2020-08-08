@@ -256,7 +256,7 @@ class Sidebar extends React.Component {
                   onClick={this.hidePanel}
                   icon={<icons.WorkInProgress />}
                   label={t('Work in Progress')}
-                  to={`/${organization.slug}/work-batches/`}
+                  to={`/${organization.slug}/workbatches/`}
                 />
                 <SidebarItem
                   {...sidebarItemProps}
