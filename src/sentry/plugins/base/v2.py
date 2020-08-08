@@ -548,9 +548,9 @@ class IPlugin2(local, PluginConfigMixin, PluginStatusMixin):
         return cls._find_subclasses_of(ExtensibleBase, root_module)
 
     @classmethod
-    def get_workflow_definitions(cls):
+    def get_process_definitions(cls):
         """
-        Returns all workflow definition classes for this plugin class. These can be defined
+        Returns all process definition classes for this plugin class. These can be defined
         anywhere in the plugin classes module, or any submodule of it.
         """
         logger.debug("Searching for workflow definitions in {}".format(cls))

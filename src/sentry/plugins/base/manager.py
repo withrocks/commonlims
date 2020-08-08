@@ -75,7 +75,7 @@ class PluginManager(object):
 
         logger.info("Loading workflows for plugin class {}".format(plugin_cls))
 
-        definitions = list(plugin_cls.get_workflow_definitions())
+        definitions = list(plugin_cls.get_process_definitions())
 
         logger.info("Found {} workflow definitions for plugin class {}".format(
             len(definitions), plugin_cls))

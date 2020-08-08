@@ -124,7 +124,7 @@ urlpatterns = patterns(
         name='clims-api-0-work-batch-settings-details'),
 
     # Processes and Tasks
-    url(r'^organizations/{org}/process-definitions/$',
+    url(r'^process-definitions/$',
         ProcessDefinitionsEndpoint.as_view(),
         name='clims-api-0-process-definitions'),
     url(r'^user-files/$',

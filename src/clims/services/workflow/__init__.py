@@ -39,7 +39,7 @@ class WorkflowBase(ExternalExtensibleBase):
         return utils.class_full_name(cls)
 
     @property
-    def definition_id(self):
+    def id(self):
         return self.get_full_name()
 
     def assign_item(self, item):
@@ -423,25 +423,24 @@ class WorkflowService(object):
         """
         raise NotImplementedError()
 
-    def get_workflows(self):
+    def get_process_definitions(self):
         # TODO: During the load phase, we should create instances of these classes
         # and keep them in an instance manager (can be lazy loaded though)
         for plugin in self._app.plugins.all():
-            for definition in plugin.get_workflow_definitions():
+            for definition in plugin.get_process_definitions():
                 yield definition()
 
     def _get_workflow_process_by_name(self, process_name):
         # TODO-simple: memoize?
-        for definition in self.get_workflows():
+        for definition in self.get_process_definitions():
             if definition.get_full_name() == process_name:
                 # TODO: Ugly. Doing this because currently get_workflows returns objects rather than classes
                 return definition.__class__
         raise WorkflowProcessNotFound(process_name)
 
-    def batch_assign_substances(self, substances, process, user, variables):
+    def batch_assign(self, entities, process, user, variables):
         """
-        Assigns all substances in the list. If an entry is an integer, it's assumed to be
-        an id of a substance. Otherwise it must inherit from SubstanceBase.
+        Assigns all entities in the list. The entities must use global id (e.g. Substance-1)
 
         :process: either be either a name and namespace of a process, e.g.
                   clims.plugins.demo.dnaseq.workflows.sequence.SequenceSimple or an instance of
@@ -451,8 +450,8 @@ class WorkflowService(object):
         """
         from clims.models import SubstanceAssignment
 
-        logger.debug("Assigning substances '{}' to process '{}'".format(
-            substances, process))
+        logger.debug("Assigning entities '{}' to process '{}'".format(
+            entities, process))
 
         if isinstance(process, six.string_types):
             Process = self._get_workflow_process_by_name(process)
@@ -466,8 +465,11 @@ class WorkflowService(object):
         assert_no_transaction()
         assignments = list()
 
+        # TODO: Only supporting substances for now:
+        entities = [int(global_id.split("-")[1]) for global_id in entities]
+
         # TODO-auth: Here we should make sure that all these substances are in the user's org
-        substances = self.batch_get_tracked_objects("Substance", substances)
+        substances = self.batch_get_tracked_objects("Substance", entities)
 
         # Mark all as starting to assign:
         with transaction.atomic():

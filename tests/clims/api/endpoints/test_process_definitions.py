@@ -13,8 +13,7 @@ class TestProcessDefinitions(APITestCase):
     def test_simple(self):
         self.toggle_log_level()
         self.login_as(self.user)
-        url = reverse('clims-api-0-process-definitions',
-                      args=(self.organization.name, ))
+        url = reverse('clims-api-0-process-definitions')
         self.toggle_log_level()
         response = self.client.get(url)
         assert response.status_code == 200, response
@@ -23,6 +22,4 @@ class TestProcessDefinitions(APITestCase):
         assert len(json) == 2
 
         for definition in json:
-            assert set(
-                definition.keys()) == {"definition_id", "fields", "presets"}
-            print(definition)
+            assert set(definition.keys()) == {"id", "fields", "presets"}

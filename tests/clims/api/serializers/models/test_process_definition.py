@@ -13,7 +13,7 @@ class ProcessDefinitionSerializerTest(SubstanceTestCase):
 
 
 expected_sequence_simple = {
-    'definition_id':
+    'id':
     u'clims.plugins.demo.dnaseq.workflows.sequence.SequenceSimple',
     'fields': [{
         'display_name': u'Comment',

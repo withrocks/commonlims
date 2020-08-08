@@ -5,24 +5,24 @@ from rest_framework.permissions import IsAuthenticated
 
 from clims.api.serializers.models.process_definition import ProcessDefinitionSerializer
 from sentry.api.base import SessionAuthentication
-from sentry.api.bases.organization import OrganizationEndpoint
+from sentry.api.base import Endpoint
 from sentry.api.paginator import OffsetPaginator
 
 logger = logging.getLogger(__name__)
 
 
-class ProcessDefinitionsEndpoint(OrganizationEndpoint):
+class ProcessDefinitionsEndpoint(Endpoint):
     authentication_classes = (SessionAuthentication, )
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request, organization):
-        # NOTE: At the moment, all workflow definitions are application-wide, not organization-wide
+    def get(self, request):
+        # TODO: At the moment, all workflow definitions are application-wide, not organization-wide
         # Fetch all loaded workflows in the system:
         # TODO: Paging by using the ResultIterator
-        workflows = list(self.app.workflows.get_workflows())
+        processes = list(self.app.workflows.get_process_definitions())
 
         return self.paginate(request=request,
-                             queryset=workflows,
+                             queryset=processes,
                              paginator_cls=OffsetPaginator,
                              default_per_page=20,
                              on_results=lambda data:

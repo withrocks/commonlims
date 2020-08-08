@@ -48,7 +48,7 @@ class WorkBatchEndpointTest(APITestCase):
         def get_tasks():
             tasks = self.app.workflows.get_tasks(
                 task_definition_key="data_entry",
-                process_definition_key=workflow.definition_id)
+                process_definition_key=workflow.id)
             tracked_objects_in_workflow_engine = [
                 t.tracked_object.id for t in tasks
             ]

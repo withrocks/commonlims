@@ -64,7 +64,6 @@ class CamundaClient(object):
         ret = list()
         for task_id in task_ids:
             task = self.api.task(id=task_id).get()
-            # TODO-nomerge: workflow engine constant
             task = ProcessTask(task.json["id"], task.json["processInstanceId"],
                                Workflow.BACKEND_CAMUNDA, None, task.json["name"])
             ret.append(task)
@@ -109,6 +108,11 @@ class CamundaClient(object):
                 processDefinitionKey=process_definition_key):
             task = ProcessTask(res.json["id"], res.json["processInstanceId"],
                                Workflow.BACKEND_CAMUNDA, None, res.json["name"])
+            # TODO: In the demo data from Camunda, there is an entry that doesn't have a
+            # processInstanceId for some reason. Filtering it out now. Can be removed when
+            # the demo data isn't added.
+            if not task.process_instance_id:
+                continue
             tasks.append(task)
         logger.debug("Fetched {} tasks".format(len(tasks)))
         self._add_tracked_object_id(tasks)
