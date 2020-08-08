@@ -19,7 +19,7 @@ class WorkBatchEndpoint(OrganizationEndpoint):
 
     def post(self, request, organization):
         # TODO: Serializer for this, validation and ensure access rights for tasks
-        tasks = request.data["tasks"]
+        tasks = request.data
 
         # Creating a workbatch takes a list of tasks that are ready for a work batch:
         work_batch = self.app.workflows.create_work_batch(tasks, organization)
