@@ -1,48 +1,81 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import withEnvironmentInQueryString from 'app/utils/withEnvironmentInQueryString'; // REMOVE ME
-import WorkBatches from 'app/views/workBatchList/workBatches';
+import withOrganization from 'app/utils/withOrganization';
 import {connect} from 'react-redux';
-import {tagsGet} from 'app/redux/actions/tag';
-// TODO: uncomment these when fixing CLIMS-203
-// import {Client} from 'app/api';
-// import {fetchOrgMembers} from 'app/actionCreators/members';
+import {workBatchActions} from 'app/redux/actions/workBatch';
+import ClimsTypes from 'app/climsTypes';
+import ListViewContainer from 'app/components/listViewContainer';
+import moment from 'moment';
+import Link from 'app/components/link';
 
-class WorkBatchList extends React.Component {
+class WorkBatchListContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
   }
 
   componentDidMount() {
-    const {getTags} = this.props;
-    getTags();
+    // TODO: Should we get the data initially in this didMount or just in the child's didMount?
+    this.props.getWorkBatches();
+  }
 
-    // TODO: uncomment this when fixing CLIMS-203
-    // this.api = new Client();
-    // const {orgId} = this.props.params;
-    // fetchOrgMembers(this.api, orgId);
+  getColumns() {
+    return [
+      {
+        Header: 'Task',
+        id: 'name',
+        accessor: row => (
+          <Link to={`/${this.props.organization.slug}/workbatches/${row.id}`}>
+            {row.name}
+          </Link>
+        ),
+        detailsLink: true,
+      },
+      {
+        Header: 'Started',
+        id: 'created_at',
+        accessor: date => moment.utc(date.created_at).fromNow(),
+      },
+      {
+        Header: 'Last updated',
+        id: 'updated_at',
+        accessor: date => moment.utc(date.updated_at).fromNow(),
+      },
+    ];
   }
 
   render() {
-    const {tags, loading} = this.state;
-
-    // TODO: display error message if there is a problem fetching tags.
-    return <WorkBatches tags={tags} tagsLoading={loading} {...this.props} />;
+    // TODO: We need to clean up this access stuff. It makes more sense if it's already
+    // a set on the org object
+    return (
+      <ListViewContainer
+        access={new Set(this.props.organization.access)}
+        organization={this.props.organization}
+        loading={this.props.loading}
+        errorMessage={this.props.errorMessage}
+        location={this.props.location}
+        columns={this.getColumns.bind(this)}
+        groupOptions={this.groupOptions}
+        searchHelpText="Search for work in progress"
+        listViewState={this.props.listViewState}
+        byIds={this.props.byIds}
+        getEntries={this.props.getWorkBatches}
+        toggleSingle={this.props.toggleSingle}
+        canSelect={false}
+      />
+    );
   }
 }
 
-const mapStateToProps = (state) => state.tag;
+WorkBatchListContainer.propTypes = {
+  ...ClimsTypes.List,
+};
 
-const mapDispatchToProps = (dispatch) => ({
-  getTags: () => dispatch(tagsGet('workBatch')),
+const mapStateToProps = state => state.workBatch;
+
+const mapDispatchToProps = dispatch => ({
+  getWorkBatches: () => dispatch(workBatchActions.getList()),
+  toggleSingle: id => dispatch(workBatchActions.select(id)),
 });
 
-WorkBatchList.propTypes = {
-  getTags: PropTypes.func,
-};
-WorkBatchList.displayName = 'WorkBatchList';
-
-export default withEnvironmentInQueryString(
-  connect(mapStateToProps, mapDispatchToProps)(WorkBatchList)
+export default withOrganization(
+  connect(mapStateToProps, mapDispatchToProps)(WorkBatchListContainer)
 );

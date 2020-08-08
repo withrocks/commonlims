@@ -7,16 +7,15 @@ import OrganizationState from 'app/mixins/organizationState';
 import {t} from 'app/locale';
 import SentryTypes from 'app/sentryTypes';
 
-import WorkBatchStore from 'app/stores/workBatchStore';
 import WorkBatchActions from './actions';
 import WorkBatchSeenBy from './seenBy';
-import AssigneeSelector from './assigneeSelector';
 
 const WorkBatchHeader = createReactClass({
   displayName: 'WorkBatchHeader',
 
   propTypes: {
     workBatch: PropTypes.object.isRequired,
+    tabSelected: PropTypes.func.isRequired,
   },
 
   contextTypes: {
@@ -43,7 +42,7 @@ const WorkBatchHeader = createReactClass({
     return this.props.workBatch.tabs.map((tab) => {
       return (
         <li className={tab.active ? 'active' : ''} key={tab.id}>
-          <a onClick={() => WorkBatchStore.activateTab(tab.id)}>{tab.title}</a>
+          <a onClick={() => this.props.tabSelected(tab.id)}>{tab.title}</a>
         </li>
       );
     });
@@ -67,22 +66,18 @@ const WorkBatchHeader = createReactClass({
       className += ' isResolved';
     }
 
-    const userActionTitle = 'Fragment analyzer'; // TODO
-
     return (
       <div className={className}>
         <div className="row">
           <div className="col-sm-7">
-            <h3>
-              {/* TODO: UI clips */}
-              {userActionTitle}
-            </h3>
+            <h3>{this.props.workBatch.name}</h3>
+            <h6>{this.props.workBatch.processDefinitionKey}</h6>
           </div>
           <div className="col-sm-5 stats">
             <div className="flex flex-justify-right">
               <div className="assigned-to">
                 <h6 className="nav-header">{t('Assignee')}</h6>
-                <AssigneeSelector id={workBatch.id} />
+                {/*<AssigneeSelector id={this.props.workBatch.id} /> */}
               </div>
             </div>
           </div>
@@ -96,7 +91,3 @@ const WorkBatchHeader = createReactClass({
 });
 
 export default WorkBatchHeader;
-
-// <ListLink to={`${baseUrl}${workBatchId}/`}>
-//   {t('Activity')} <span className="badge animated">{workBatch.numComments}</span>
-// </ListLink>
