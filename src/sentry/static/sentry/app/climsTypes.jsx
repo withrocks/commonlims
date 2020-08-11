@@ -19,6 +19,11 @@ export const ListViewState = PropTypes.shape({
 export const List = PropTypes.shape({
   byIds: PropTypes.object.isRequired,
   listViewState: ListViewState.isRequired,
+};
+
+export const Organization = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  slug: PropTypes.string.isRequired,
 });
 
 // TODO: all these should have javascript-like property names

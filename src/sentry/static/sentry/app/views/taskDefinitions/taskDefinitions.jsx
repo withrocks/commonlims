@@ -7,15 +7,12 @@ import LoadingError from 'app/components/loadingError';
 import LoadingIndicator from 'app/components/loadingIndicator';
 import {groupBy, sum} from 'lodash';
 import ClimsTypes from 'app/climsTypes';
+import {taskDefinitionActions} from 'app/redux/actions/taskDefinition';
 
 export class TaskDefinitions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-  }
-
-  componentDidMount() {
-    this.props.getTaskDefinitionList(this.props.organization);
   }
 
   renderBody() {

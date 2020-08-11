@@ -3,23 +3,28 @@ import React from 'react';
 import withOrganization from 'app/utils/withOrganization';
 import TaskDefinitions from 'app/views/taskDefinitions/taskDefinitions';
 import {connect} from 'react-redux';
-import {mapTaskDefinitionDispatchToProps} from 'app/redux/actions/taskDefinition';
+import {taskDefinitionActions} from 'app/redux/actions/taskDefinition';
 
 class TaskDefinitionsContainer extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  componentDidMount() {
+    this.props.getList(this.props.organization);
+  }
+
   render() {
     const {visibleIds, byIds} = this.props;
     const taskDefinitions = visibleIds.map((id) => byIds[id]);
-
+    console.log(taskDefinitions);
     return <TaskDefinitions taskDefinitions={taskDefinitions} {...this.props} />;
   }
 }
 
 TaskDefinitionsContainer.propTypes = {
   ...ClimsTypes.List,
+  ClimsTypes.Organization,
 };
 
 const mapStateToProps = (state) => {
@@ -32,6 +37,10 @@ const mapStateToProps = (state) => {
   };
 };
 
+const mapDispatchToProps = (dispatch) => ({
+  getList: (org) => dispatch(taskDefinitionActions.getList(org)),
+});
+
 export default withOrganization(
-  connect(mapStateToProps, mapTaskDefinitionDispatchToProps)(TaskDefinitionsContainer)
+  connect(mapStateToProps, mapDispatchToProps)(TaskDefinitionsContainer)
 );
