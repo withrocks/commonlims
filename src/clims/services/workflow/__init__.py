@@ -500,7 +500,7 @@ class WorkflowService(object):
         # TODO
         raise NotImplementedError()
 
-    def get_task_definitions(self, process_definition_key, task_definition_key):
+    def get_task_definitions(self, process_definition_key=None, task_definition_key=None):
         from clims.models import CamundaTask
         from django.db.models import Count
         from django.db.models import Q
@@ -520,11 +520,25 @@ class WorkflowService(object):
             'task_definition_key', 'name', 'process_definition__name',
             'process_definition__key').annotate(count=Count('name'))
 
+        ret = list()
         for entry in task_definitions_with_instance_count:
             entry["id"] = "{}/{}".format(
                 entry["process_definition__key"], entry["task_definition_key"])
+            ret.append(
+                TaskDefinitionInfo(entry["id"], entry["name"], entry["process_definition__key"],
+                        entry["task_definition_key"],
+                    entry["process_definition__name"], entry["count"]))
+        return ret
 
-        return task_definitions_with_instance_count
+
+class TaskDefinitionInfo(object):
+    def __init__(self, id, name, process_definition_key, task_definition_key, process_definition_name, count):
+        self.id = id
+        self.name = name
+        self.process_definition_key = process_definition_key
+        self.process_definition_name = process_definition_name
+        self.task_definition_key = task_definition_key
+        self.count = count
 
 
 class ProcessTask(object):

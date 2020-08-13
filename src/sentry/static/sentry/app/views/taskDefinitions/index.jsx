@@ -17,14 +17,13 @@ class TaskDefinitionsContainer extends React.Component {
   render() {
     const {visibleIds, byIds} = this.props;
     const taskDefinitions = visibleIds.map((id) => byIds[id]);
-    console.log(taskDefinitions);
     return <TaskDefinitions taskDefinitions={taskDefinitions} {...this.props} />;
   }
 }
 
 TaskDefinitionsContainer.propTypes = {
   ...ClimsTypes.List,
-  ClimsTypes.Organization,
+  organization: ClimsTypes.Organization.isRequired,
 };
 
 const mapStateToProps = (state) => {
