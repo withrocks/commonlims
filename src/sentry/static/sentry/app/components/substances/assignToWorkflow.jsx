@@ -3,23 +3,28 @@ import React from 'react';
 import createReactClass from 'create-react-class';
 import Modal from 'react-bootstrap/lib/Modal';
 import {connect} from 'react-redux';
+import ClimsTypes from 'app/climsTypes';
 
 import {t} from 'app/locale';
 import SelectControl from 'app/components/forms/selectControl';
-import {processDefinitionsGet} from 'app/redux/actions/processDefinition';
-import {processesPost} from 'app/redux/actions/process';
 
 import JsonForm from 'app/views/settings/components/forms/jsonForm';
 import LoadingIndicator from 'app/components/loadingIndicator';
 import Link from 'app/components/link';
 import Bpmn from 'app/components/bpmn';
 import styled from 'react-emotion';
+import {sortBy} from 'lodash';
+import {getPresetsById} from 'app/redux/selectors/processDefinition';
 
 import {
   processAssignSelectPreset,
   processAssignSelectProcess,
   processAssignSetVariable,
-} from 'app/redux/actions/processAssign';
+  processAssignmentsPost,
+  processAssignmentsSetEditing,
+} from 'app/redux/actions/processAssignment';
+
+import {processDefinitionActions} from 'app/redux/actions/processDefinition';
 
 const StyledBpmn = styled(Bpmn)`
   height: 500px;
@@ -27,6 +32,7 @@ const StyledBpmn = styled(Bpmn)`
 
 // TODO: Write tests for this component
 // TODO: Change to JS6 class
+// TODO-simple: Rename to AssignToProcess for consistency
 const AssignToWorkflowButton = createReactClass({
   displayName: 'AssignToWorkflowButton',
 
@@ -35,19 +41,24 @@ const AssignToWorkflowButton = createReactClass({
     style: PropTypes.object,
     tooltip: PropTypes.string,
     buttonTitle: PropTypes.string,
-    processDefinition: PropTypes.object,
     process: PropTypes.object,
     substanceSearchEntry: PropTypes.object,
-    processesPost: PropTypes.func,
-    processDefinitionsGet: PropTypes.func,
+    processAssignmentsPost: PropTypes.func,
+    getProcessDefinitionList: PropTypes.func,
     processAssignSelectPreset: PropTypes.func.isRequired,
     processAssignSelectProcess: PropTypes.func.isRequired,
     processAssignSetVariable: PropTypes.func.isRequired,
+    presetsById: PropTypes.object,
+
+    processDefinition: ClimsTypes.List.isRequired,
+    processAssignment: ClimsTypes.ProcessAssignmentStore.isRequired,
+    processAssignmentsSetEditing: PropTypes.func,
+
+    organization: ClimsTypes.Organization.isRequired,
   },
 
   getInitialState() {
     return {
-      isModalOpen: false,
       errors: {},
       value: null,
       setProcessVariables: {},
@@ -59,7 +70,7 @@ const AssignToWorkflowButton = createReactClass({
   },
 
   UNSAFE_componentWillMount() {
-    this.props.processDefinitionsGet();
+    this.props.getProcessDefinitionList(this.props.organization);
   },
 
   renderDiagram() {
@@ -93,23 +104,22 @@ const AssignToWorkflowButton = createReactClass({
     if (this.props.disabled) {
       return;
     }
-    this.setState({
-      isModalOpen: !this.state.isModalOpen,
-    });
+    this.props.processAssignmentsSetEditing();
   },
 
   onSubmit(e) {
     e.preventDefault();
 
-    if (this.props.process.saving) {
+    if (this.props.process.assignmentSaving) {
       return;
     }
 
     // TODO: substances already selected
-    this.props.processesPost(
-      this.state.selectedProcess,
-      this.state.variables,
-      this.props.substanceSearchEntry.selectedIds.toArray()
+    this.props.processAssignmentsPost(
+      this.props.processAssignment.assignProcessDefinitionId,
+      this.props.processAssignment.assignVariables,
+      this.props.substanceSearchEntry.selectedIds.toArray(),
+      'lab' // TODO: Get from URL
     );
   },
 
@@ -123,9 +133,12 @@ const AssignToWorkflowButton = createReactClass({
 
   renderSettings() {
     let fields = null;
-    const {assignProcessDefinition, assignVariables} = this.props.processDefinition;
+    const {assignVariables, assignProcessDefinitionId} = this.props.processAssignment;
 
-    if (assignProcessDefinition) {
+    if (assignProcessDefinitionId) {
+      const assignProcessDefinition = this.props.processDefinition.byIds[
+        assignProcessDefinitionId
+      ];
       fields = this.createFieldsFromDefinition(assignProcessDefinition);
     } else {
       fields = [];
@@ -139,23 +152,31 @@ const AssignToWorkflowButton = createReactClass({
   },
 
   render() {
-    if (this.props.processDefinition.loading) {
+    if (this.props.process.processDefinitionLoading) {
       return <LoadingIndicator />;
     }
 
-    const presets = Object.entries(this.props.processDefinition.presetsById).map(
+    const presets = Object.entries(this.props.presetsById).map((entry) => {
+      return {value: entry[1].id, label: entry[1].name};
+    });
+    const presetsSorted = sortBy(presets, 'label');
+
+    // TODO: Here we should handle the case where two workflows have the same name (but different
+    // namespaces), by showing the full name in that case
+    const processDefinitions = Object.entries(this.props.processDefinition.byIds).map(
       (entry) => {
-        return {value: entry[0], label: entry[1].name};
+        const processId = entry[1].id;
+        const elements = processId.split('.');
+        const processName = elements[elements.length - 1];
+        return {value: entry[0], label: processName};
       }
     );
 
-    const processDefinitions = Object.entries(
-      this.props.processDefinition.processDefinitionsById
-    ).map((entry) => {
-      return {value: entry[0], label: entry[1].id};
-    });
-
-    const {assignPreset, assignProcessDefinition} = this.props.processDefinition;
+    const {
+      assignPreset,
+      assignProcessDefinitionId,
+      errorMessage,
+    } = this.props.processAssignment;
 
     // TODO: Remove the <br/>s!
     return (
@@ -169,19 +190,30 @@ const AssignToWorkflowButton = createReactClass({
         >
           {this.props.children}
         </a>
-        <Modal show={this.state.isModalOpen} animation={false} onHide={this.onToggle}>
+        <Modal
+          show={this.props.processAssignment.editing}
+          animation={false}
+          onHide={this.onToggle}
+        >
           <form onSubmit={this.onSubmit}>
             <div className="modal-header">
               <h4>{t('Assign samples to a workflow')}</h4>
             </div>
 
+            {errorMessage !== null && (
+              <div className="alert alert-error alert-block">
+                {t(`Not able to assign to process: ${errorMessage}`)}
+              </div>
+            )}
             <div className="stream-tag-filter">
               <h6 className="nav-header">Preset</h6>
               <SelectControl
-                onChange={(preset) => this.props.processAssignSelectPreset(preset.value)}
+                onChange={(item) =>
+                  this.props.processAssignSelectPreset(this.props.presetsById[item.value])
+                }
                 placeholder="Select a preset of workflow and variables"
-                options={presets}
-                value={assignPreset}
+                options={presetsSorted}
+                value={assignPreset ? assignPreset.id : null}
               />
             </div>
             <br />
@@ -191,9 +223,10 @@ const AssignToWorkflowButton = createReactClass({
                 onChange={(sel) => this.props.processAssignSelectProcess(sel.value)}
                 placeholder="Select a workflow or subprocess"
                 options={processDefinitions}
-                value={assignProcessDefinition ? assignProcessDefinition.id : null}
+                value={assignProcessDefinitionId}
               />
             </div>
+
             <br />
             {this.renderSettings()}
 
@@ -202,7 +235,7 @@ const AssignToWorkflowButton = createReactClass({
               <button
                 type="button"
                 className="btn btn-default"
-                disabled={this.props.process.saving}
+                disabled={this.props.process.assignmentSaving}
                 onClick={this.onToggle}
               >
                 {t('Cancel')}
@@ -210,7 +243,7 @@ const AssignToWorkflowButton = createReactClass({
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={this.props.process.saving}
+                disabled={this.props.process.assignmentSaving}
               >
                 {t('Assign')}
               </button>
@@ -227,18 +260,21 @@ const mapStateToProps = (state) => {
     processDefinition: state.processDefinition,
     substanceSearchEntry: state.substanceSearchEntry,
     process: state.process,
+    processAssignment: state.processAssignment,
+
+    presetsById: getPresetsById(state),
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  processDefinitionsGet: () => dispatch(processDefinitionsGet()),
-  processesPost: (definitionId, variables, instances) =>
-    dispatch(processesPost(definitionId, variables, instances)),
-
+  getProcessDefinitionList: (org) => dispatch(processDefinitionActions.getList(org)),
   processAssignSelectPreset: (preset) => dispatch(processAssignSelectPreset(preset)),
   processAssignSelectProcess: (process) => dispatch(processAssignSelectProcess(process)),
   processAssignSetVariable: (key, value) =>
     dispatch(processAssignSetVariable(key, value)),
+  processAssignmentsPost: (definitionId, variables, substances, org) =>
+    dispatch(processAssignmentsPost(definitionId, variables, substances, org)),
+  processAssignmentsSetEditing: (value) => dispatch(processAssignmentsSetEditing(value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignToWorkflowButton);

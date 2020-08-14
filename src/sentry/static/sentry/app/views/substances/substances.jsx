@@ -150,6 +150,7 @@ class Substances extends React.Component {
           <AssignToWorkflowButton
             className="btn btn-sm btn-default"
             disabled={!canAssignToWorkflow}
+            organization={this.props.organization}
           >
             {t('Assign to workflow')}
           </AssignToWorkflowButton>
