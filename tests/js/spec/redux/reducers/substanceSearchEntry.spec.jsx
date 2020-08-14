@@ -499,7 +499,6 @@ describe('substance reducer', () => {
 
     const expectedByIds = keyBy(transformedEntries, (entry) => entry.entity.global_id);
 
-    console.log(expandedState.visibleIds);
     expect(expandedState).toEqual({
       ...originalState,
       errorMessage: null,

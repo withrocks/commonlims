@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux';
 
 import process from './process';
+import processAssignment from './processAssignment';
 import processDefinition from './processDefinition';
 import savedSearch from './savedSearch';
 import substanceSearchEntry from './substanceSearchEntry';
@@ -12,6 +13,7 @@ import projectSearchEntry from './projectSearchEntry';
 
 export default combineReducers({
   process,
+  processAssignment,
   processDefinition,
   savedSearch,
   substanceSearchEntry,
