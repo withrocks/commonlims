@@ -18,7 +18,13 @@ export function makeActionCreator(type, ...argNames) {
 
 // List actions:
 const acGetListRequest = (resource) =>
-  makeActionCreator(`GET_${resource}_LIST_REQUEST`, 'search', 'groupBy', 'cursor');
+  makeActionCreator(
+    `GET_${resource}_LIST_REQUEST`,
+    'search',
+    'groupBy',
+    'cursor',
+    'getParams'
+  );
 
 const acGetListSuccess = (resource) =>
   makeActionCreator(`GET_${resource}_LIST_SUCCESS`, 'entries', 'link');
@@ -27,12 +33,13 @@ const acGetListFailure = (resource) =>
   makeActionCreator(`GET_${resource}_LIST_FAILURE`, 'statusCode', 'message');
 
 const acGetList = (resource, urlTemplate) => {
-  return (org, search, groupBy, cursor) => (dispatch) => {
-    dispatch(acGetListRequest(resource)(search, groupBy, cursor));
+  return (org, search, groupBy, cursor, getParams) => (dispatch) => {
+    dispatch(acGetListRequest(resource)(search, groupBy, cursor, getParams));
 
     const url = urlTemplate.replace('{org}', org.slug);
     const config = {
       params: {
+        ...getParams,
         search,
         cursor,
       },

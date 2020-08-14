@@ -1,5 +1,3 @@
-import {Client} from 'app/api';
-import {browserHistory} from 'react-router';
 import {makeResourceActions} from './shared';
 
 export const RESOURCE_NAME = 'WORK_BATCH';
