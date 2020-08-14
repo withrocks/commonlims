@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {makeResourceActions} from './shared';
 
 export const RESOURCE_NAME = 'PROCESS_DEFINITION';
