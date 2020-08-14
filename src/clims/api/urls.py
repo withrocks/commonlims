@@ -34,6 +34,7 @@ from .endpoints.plugin_actions import PluginActionsEndpoint
 
 from .endpoints.workflow import WorkflowEndpoint
 from .endpoints.task_definition import TaskDefinitionEndpoint
+from .endpoints.task_definition_details import TaskDefinitionDetailsEndpoint
 
 from .endpoints.substance_file import SubstanceFileEndpoint
 from .endpoints.substance_file_details import (SubstanceFileDetailsEndpoint,
@@ -59,9 +60,11 @@ def url(endpoint, *args, **kwargs):
 urlpatterns = patterns(
     '',
     # Workflow
-    url(r'^organizations/{org}/task-definitions/$',
-        TaskDefinitionEndpoint.as_view(),
+    url(r'^organizations/{org}/task-definitions/', TaskDefinitionEndpoint.as_view(),
         name='clims-api-0-task-definitions'),
+    url(r'^task-definitions/(?P<process_definition_key>[^\/]+)/(?P<task_definition_key>[^\/]+)/$',
+        TaskDefinitionDetailsEndpoint.as_view(),
+        name='clims-api-0-task-definition-details'),
     url(r'^organizations/{org}/workflow/(?P<workflow_endpoint>[^\/]+)/$',
         WorkflowEndpoint.as_view(),
         name='clims-api-0-workflow-root'),

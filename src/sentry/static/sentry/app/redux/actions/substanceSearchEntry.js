@@ -71,7 +71,9 @@ export const substanceSearchEntryExpandCached = (parentEntry) => {
   };
 };
 
-export const substanceSearchEntryExpandCollapse = (parentEntry) => (dispatch) => {
+export const substanceSearchEntryExpandCollapse = (parentEntry, searchKey) => (
+  dispatch
+) => {
   dispatch(substanceSearchEntryExpandCollapseRequest(parentEntry));
   if (parentEntry.children.isExpanded) {
     return dispatch(substanceSearchEntryCollapse(parentEntry));
@@ -80,7 +82,7 @@ export const substanceSearchEntryExpandCollapse = (parentEntry) => (dispatch) =>
   } else {
     const request = {
       params: {
-        search: 'substance.sample_type:' + parentEntry.entity.name,
+        search: 'substance.' + searchKey + ':' + parentEntry.entity.name,
       },
     };
     return axios

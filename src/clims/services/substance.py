@@ -438,6 +438,9 @@ class SubstanceQueryBuilder(BaseQueryBuilder):
         elif key == 'substance.sample_type':
             query_params['properties__extensible_property_type__name'] = 'sample_type'
             query_params['properties__string_value'] = val
+        elif key == "substance.container":
+            query_params['archetype__locations__current'] = True
+            query_params['archetype__locations__container__name'] = val
         else:
             raise NotImplementedError("The key {} is not implemented".format(key))
         return query_params

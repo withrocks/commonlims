@@ -149,10 +149,10 @@ class BaseExtensibleService(object):
                 get_args['archetype__project__name'] = value
             elif key == 'latest':
                 get_args['{}'.format(key)] = value
-            elif key.startswith('properties'):
-                get_args[key] = value
-            else:
+            elif key == 'id':
                 get_args['archetype__{}'.format(key)] = value
+            else:
+                get_args['{}'.format(key)] = value
         return get_args
 
     @classmethod

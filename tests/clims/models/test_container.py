@@ -35,6 +35,7 @@ class TestContainer(TestCase):
         with pytest.raises(IntegrityError):
             container2.save()
 
+    @pytest.mark.dev_edvard
     def test_can_add_custom_property(self):
         self.register_extensible(HairSampleContainer)
         container = HairSampleContainer(name="container1")

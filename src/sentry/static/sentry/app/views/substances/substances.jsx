@@ -28,6 +28,7 @@ class Substances extends React.Component {
     this.onSearch = this.onSearch.bind(this);
     this.toggleAll = this.toggleAll.bind(this);
     this.onCursor = this.onCursor.bind(this);
+    this.expandCollapse = this.expandCollapse.bind(this);
 
     let {search, cursor, groupBy} = this.props.substanceSearchEntry;
     const query = this.props.location.query;
@@ -159,6 +160,11 @@ class Substances extends React.Component {
     );
   }
 
+  expandCollapse(parentEntry) {
+    let {groupBy} = this.props.substanceSearchEntry;
+    this.props.substanceSearchEntryExpandCollapse(parentEntry, groupBy);
+  }
+
   render() {
     // TODO: Rename css classes to something else than stream
     const groupOptions = [
@@ -205,7 +211,7 @@ class Substances extends React.Component {
             toggleAll={this.toggleAll}
             toggleSingle={this.props.substanceSearchEntryToggleSelect}
             listActionBar={actionBar}
-            expandCollapse={this.props.substanceSearchEntryExpandCollapse}
+            expandCollapse={this.expandCollapse}
           />
 
           {this.props.substanceSearchEntry.paginationEnabled &&
@@ -250,8 +256,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(substanceSearchEntriesToggleSelectAll(doSelect)),
   substanceSearchEntryToggleSelect: (id, doSelect) =>
     dispatch(substanceSearchEntryToggleSelect(id, doSelect)),
-  substanceSearchEntryExpandCollapse: (parentEntry) =>
-    dispatch(substanceSearchEntryExpandCollapse(parentEntry)),
+  substanceSearchEntryExpandCollapse: (parentEntry, searchKey) =>
+    dispatch(substanceSearchEntryExpandCollapse(parentEntry, searchKey)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Substances);

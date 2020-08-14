@@ -154,14 +154,65 @@ describe('substance redux actions', function () {
         },
       ];
 
+      const searchKey = 'sample_type';
       // TODO: return
-      return store.dispatch(substanceSearchEntryExpandCollapse(parentEntry)).then(() => {
-        expect(store.getActions()).toEqual(expectedActions);
-        const request = moxios.requests.mostRecent();
-        expect(request.url).toBe(
-          '/api/0/organizations/lab/substances/?search=substance.sample_type:fang'
-        );
-      });
+      return store
+        .dispatch(substanceSearchEntryExpandCollapse(parentEntry, searchKey))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          const request = moxios.requests.mostRecent();
+          expect(request.url).toBe(
+            '/api/0/organizations/lab/substances/?search=substance.sample_type:fang'
+          );
+        });
+    });
+
+    it('should handle un-cached expand of container', async () => {
+      const fetchedEntities = mockResponseNoGroup;
+      const store = mockStore({substances: []});
+
+      moxios.stubRequest(
+        '/api/0/organizations/lab/substances/?search=substance.container:cont1',
+        {
+          status: 200,
+          responseText: fetchedEntities,
+          headers: [],
+        }
+      );
+
+      const parentEntry = {
+        entity: {
+          name: 'cont1',
+          global_id: 'Parent-1',
+        },
+        children: {
+          isFetched: false,
+        },
+      };
+
+      const expectedActions = [
+        {
+          type: SUBSTANCE_SEARCH_ENTRY_EXPAND_COLLAPSE_REQUEST,
+          parentEntry,
+        },
+        {
+          type: SUBSTANCE_SEARCH_ENTRY_EXPAND_SUCCESS,
+          fetchedEntities,
+          parentEntry,
+        },
+      ];
+
+      const searchKey = 'container';
+      // TODO: return
+      return store
+        .dispatch(substanceSearchEntryExpandCollapse(parentEntry, searchKey))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          const request = moxios.requests.mostRecent();
+          expect(request.url).toBe(
+            '/api/0/organizations/lab/substances/?search=substance.container:cont1'
+          );
+        });
     });
 
     it('should create an action to collapse children from parent entry', async () => {
