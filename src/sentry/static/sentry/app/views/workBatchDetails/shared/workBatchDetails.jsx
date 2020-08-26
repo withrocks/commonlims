@@ -6,7 +6,10 @@ import DocumentTitle from 'react-document-title';
 import LoadingIndicator from 'app/components/loadingIndicator';
 import ClimsTypes from 'app/climsTypes';
 import withOrganization from 'app/utils/withOrganization';
-import {getWorkBatchDetails} from 'app/redux/actions/workBatchDetails';
+import {
+  getWorkBatchDetails,
+  createWorkBatchTransition,
+} from 'app/redux/actions/workBatchDetails';
 
 import WorkBatchDetailsFields from 'app/views/workBatchDetails/shared/workBatchFields';
 import WorkBatchDetailsFiles from 'app/views/workBatchDetails/shared/workBatchFiles';
@@ -14,6 +17,8 @@ import WorkBatchDetailsActivity from 'app/views/workBatchDetails/shared/workBatc
 import SampleTransitioner from 'app/components/sampleTransitioner/sampleTransitioner';
 
 import WorkBatchHeader from './header';
+import {SampleLocation} from 'app/components/sampleTransitioner/sampleLocation';
+import {Sample} from 'app/components/sampleTransitioner/sample';
 
 class WorkBatchDetails extends React.Component {
   constructor(props) {
@@ -73,6 +78,25 @@ WorkBatchDetails.propTypes = {
   workBatch: ClimsTypes.WorkBatch.isRequired,
 };
 
+// TODO: Move this further down, to where we actually need this
+function mapSubstanceToJsType(substance) {
+  const {containerId, row, col} = substance.location;
+  const location = new SampleLocation(containerId, row, col); // TODO: rename sample=> substance
+  return new Sample(substance.id, substance.name, location);
+}
+
+// Locally, we work with an object that's a bit smarter than the json returned (implements
+// equality checks etc.)
+function mapWorkbatchToJsType(workBatch) {
+  workBatch.source.substances = workBatch.source.substances.map((s) =>
+    mapSubstanceToJsType(s)
+  );
+  workBatch.target.substances = workBatch.target.substances.map((s) =>
+    mapSubstanceToJsType(s)
+  );
+  return workBatch;
+}
+
 class WorkBatchDetailsContainer extends React.Component {
   // TODO: connect to redux
   //
@@ -88,6 +112,8 @@ class WorkBatchDetailsContainer extends React.Component {
   //   WorkBatchStore.activateView(subtask.view);
   // },
   //
+  //
+
   componentDidMount() {
     this.props.getWorkBatchDetails(0, 0); // TODO
   }
@@ -96,8 +122,12 @@ class WorkBatchDetailsContainer extends React.Component {
     if (this.props.loading || !this.props.workBatch) {
       return <LoadingIndicator />;
     }
-
-    return <WorkBatchDetails {...this.props} />;
+    return (
+      <WorkBatchDetails
+        workBatch={mapWorkbatchToJsType(this.props.workBatch)}
+        createWorkBatchTransition={this.props.createWorkBatchTransition}
+      />
+    );
   }
 }
 
@@ -136,12 +166,15 @@ WorkBatchDetailsContainer.propTypes = {
   workBatch: ClimsTypes.WorkBatch.isRequired,
   loading: PropTypes.bool.isRequired,
   getWorkBatchDetails: PropTypes.func.isRequired,
+  createWorkBatchTransition: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => state.workBatchDetails;
 
 const mapDispatchToProps = (dispatch) => ({
   getWorkBatchDetails: (org, id) => dispatch(getWorkBatchDetails(org, id)),
+  createWorkBatchTransition: (workBatch, transition) =>
+    dispatch(createWorkBatchTransition(workBatch, transition)),
 });
 
 export default withOrganization(

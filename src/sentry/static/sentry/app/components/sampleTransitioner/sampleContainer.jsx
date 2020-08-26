@@ -40,7 +40,6 @@ export class SampleContainer extends React.Component {
 
   isTransitionSource(location) {
     const {transitionSourceLocations} = this.props;
-
     if (!this.isSourceContainer()) {
       return false;
     }
@@ -131,6 +130,7 @@ export class SampleContainer extends React.Component {
     };
 
     const location = new SampleLocation(containerId, row, col);
+    const x = this.isTransitionSource(location);
 
     return (
       <SampleWell

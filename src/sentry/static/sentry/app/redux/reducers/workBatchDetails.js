@@ -1,9 +1,10 @@
-import {SampleLocation} from 'app/components/sampleTransitioner/sampleLocation';
-import {Sample} from 'app/components/sampleTransitioner/sample';
+// import {SampleLocation} from 'app/components/sampleTransitioner/sampleLocation';
+// import {Sample} from 'app/components/sampleTransitioner/sample';
 import {
   WORK_BATCH_DETAILS_GET_REQUEST,
   WORK_BATCH_DETAILS_GET_SUCCESS,
   WORK_BATCH_DETAILS_GET_FAILURE,
+  CREATE_WORK_BATCH_TRANSITION,
 } from '../actions/workBatchDetails';
 
 const initialState = {
@@ -12,18 +13,19 @@ const initialState = {
   workBatch: null,
 };
 
-function prepareWorkBatchForLocalWork(workBatch) {
-  // Maps the contract we get from the API to contain classes that e.g. implement equality checks
-  // Also adds
-  const sourceSubstances = workBatch.source.substances.map((s) => {
-    const {containerId, row, col} = s.location;
-    const location = new SampleLocation(containerId, row, col); // TODO: rename sample=> substance
-    return new Sample(s.id, s.name, location);
-  });
+// function mapSubstanceToJsType(substance) {
+//   const {containerId, row, col} = substance.location;
+//   const location = new SampleLocation(containerId, row, col); // TODO: rename sample=> substance
+//   return new Sample(substance.id, substance.name, location);
+// }
 
-  workBatch.source.substances = sourceSubstances;
-  return workBatch;
-}
+// // Locally, we work with an object that's a bit smarter than the json returned (implements
+// // equality checks etc.)
+// function mapWorkbatchToJsType(workBatch) {
+//   workBatch.source.substances = workBatch.source.substances.map((s) => mapSubstanceToJsType(s));
+//   workBatch.target.substances = workBatch.target.substances.map((s) => mapSubstanceToJsType(s));
+//   return workBatch;
+// }
 
 const workBatchDetails = (state = initialState, action) => {
   switch (action.type) {
@@ -34,13 +36,13 @@ const workBatchDetails = (state = initialState, action) => {
         loading: true,
       };
     case WORK_BATCH_DETAILS_GET_SUCCESS: {
-      const workBatch = prepareWorkBatchForLocalWork(action.workBatch);
+      // const workBatch = mapWorkbatchToJsType(action.workBatch);
 
       return {
         ...state,
         errorMessage: null,
         loading: false,
-        workBatch,
+        workBatch: action.workBatch,
       };
     }
     case WORK_BATCH_DETAILS_GET_FAILURE: {
@@ -48,6 +50,15 @@ const workBatchDetails = (state = initialState, action) => {
         ...state,
         errorMessage: action.message,
         loading: false,
+      };
+    }
+    case CREATE_WORK_BATCH_TRANSITION: {
+      return {
+        ...state,
+        workBatch: {
+          ...state.workBatch,
+          transitions: [action.item],
+        },
       };
     }
     default:

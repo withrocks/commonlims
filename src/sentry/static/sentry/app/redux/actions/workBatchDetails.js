@@ -1,5 +1,6 @@
 // import axios from 'axios';
 // import {Client} from 'app/api';
+import {makeActionCreator} from 'app/redux/actions/shared';
 
 export const WORK_BATCH_DETAILS_GET_REQUEST = 'WORK_BATCH_DETAILS_GET_REQUEST';
 export const getWorkBatchDetailsRequest = () => {
@@ -21,6 +22,52 @@ export const getWorkBatchDetailsFailure = (err) => ({
   type: WORK_BATCH_DETAILS_GET_FAILURE,
   message: err,
 });
+
+export const CREATE_WORK_BATCH_TRANSITION_REQUEST =
+  'CREATE_WORK_BATCH_TRANSITION_REQUEST';
+export const createWorkBatchTransitionRequest = makeActionCreator(
+  CREATE_WORK_BATCH_TRANSITION_REQUEST,
+  'workBatch',
+  'entry'
+);
+
+export const CREATE_WORK_BATCH_TRANSITION_SUCCESS =
+  'CREATE_WORK_BATCH_TRANSITION_SUCCESS';
+export const createWorkBatchTransitionSuccess = makeActionCreator(
+  CREATE_WORK_BATCH_TRANSITION_SUCCESS,
+  'workBatch',
+  'entry'
+);
+
+export const CREATE_WORK_BATCH_TRANSITION_FAILURE =
+  'CREATE_WORK_BATCH_TRANSITION_FAILURE';
+export const createWorkBatchTransitionFailure = makeActionCreator(
+  CREATE_WORK_BATCH_TRANSITION_FAILURE,
+  'statusCode',
+  'message'
+);
+
+function sleep(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+// Creates a transition in the backend that's related to this workbatch. The transition
+// will be marked as inProgress, so it can be shown directly to the user.
+export const createWorkBatchTransition = (workBatch, entry) => (dispatch) => {
+  dispatch(createWorkBatchTransitionRequest(workBatch, entry));
+
+  sleep(1000).then(() => {
+    dispatch(createWorkBatchTransitionSuccess(workBatch, entry));
+  });
+
+  // TODO: Execute POST on /workBatches/1/transitions/
+};
+
+export const removeWorkBatchTransition = (workBatch) => (dispatch) => {
+  dispatch(getWorkBatchDetailsRequest());
+
+  // TODO: Execute DELETE on /workBatches/1/transitions/, which soft-deletes the transition
+};
 
 export const getWorkBatchDetails = (org, id) => (dispatch) => {
   dispatch(getWorkBatchDetailsRequest());
@@ -99,46 +146,147 @@ export const getWorkBatchDetails = (org, id) => (dispatch) => {
 
     subtasks: [{description: 'first do this'}, {description: 'then do that'}],
 
-    // TODO: synch with backend
-    transitions: [],
+    // Transitions map from a substance in a container to a substance in a container
+    // NEW LOOK (need to support substances too)
+    transitions: [
+      // {
+      //   containers: [], // In Common LIMS, containers can be transitioned too (e.g. between freezers)
+      //   substances: [
+      //     // Can be either "analyte" (creates a child) or "move" (just moves)
+      //     {source: 1, target: 3, type: 'analyte'},
+      //   ],
+      // },
+    ],
+    transitions: [
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 0, row: 0},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 1, row: 1},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 2, row: 2},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 3, row: 3},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 4, row: 4},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 5, row: 3},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 6, row: 2},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 7, row: 1},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 8, row: 0},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 9, row: 1},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 10, row: 2},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 11, row: 3},
+      //   targetSampleId: null,
+      // },
+      // {
+      //   sourceLocation: {containerId: 1, column: 1, row: 1},
+      //   sourceSampleId: 1,
+      //   targetLocation: {containerId: 3, column: 10, row: 4},
+      //   targetSampleId: null,
+      // },
+    ],
+
     source: {
       substances: [
         {
           id: 1,
-          name: 'sample1',
+          name: 'S1',
           location: {
             containerId: 1,
-            // NOTE: This is a plate in this case, so we should get row/col from the backend
-            row: 1,
-            col: 1,
+            row: 0,
+            col: 0,
+          },
+        },
+        {
+          id: 3,
+          name: 'S3',
+          location: {
+            containerId: 3,
+            row: 0,
+            col: 0,
           },
         },
       ],
-      // TODO: backend doesn't use dimensions, but that makes sense
       containers: [
         {
           id: 1,
-          name: 'container1',
+          name: 'C1',
           dimensions: {rows: 8, cols: 12},
-          typeName: '64 well plate',
+          typeName: '96 well plate',
+        },
+        {
+          id: 2,
+          name: 'C2',
+          dimensions: {rows: 8, cols: 12},
+          typeName: '96 well plate',
         },
       ],
     },
     target: {
       substances: [],
-
-      // TODO: the backend must decide if it should create an initial container for convenience.
-      // Here we assume that it will add one.
       containers: [
         {
-          id: -1,
-          name: 'something',
+          id: 3,
+          name: 'C3',
           dimensions: {rows: 8, cols: 12},
           typeName: '96 well plate',
         },
       ],
     },
 
+    // TODO: Just an ID of a workbatch view
     tabs: [
       {
         title: 'Move samples',
@@ -151,7 +299,6 @@ export const getWorkBatchDetails = (org, id) => (dispatch) => {
     ],
   };
 
-  // TODO: hook up with bakend
   dispatch(getWorkBatchDetailsSuccess(data));
 
   // return axios

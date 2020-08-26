@@ -37,10 +37,6 @@ class SampleWell extends React.Component {
       className = `${className} highlighted`;
     }
 
-    if (inHoveredRowOrColumn) {
-      className = `${className} highlighted-background`;
-    }
-
     return className;
   }
 
