@@ -24,6 +24,8 @@ from .endpoints.user_files import UserFilesEndpoint
 from .endpoints.work_batch_files import WorkBatchFilesEndpoint
 from .endpoints.work_batch_file_details import WorkBatchFileDetailsEndpoint
 
+from .endpoints.work_batch_transitions import WorkBatchTransitionsEndpoint
+
 from .endpoints.work_batch_settings import (WorkBatchSettingsEndpoint,
                                             WorkBatchSettingsDetailsEndpoint)
 
@@ -141,6 +143,12 @@ urlpatterns = patterns(
     url(r'^work-batch-settings/(?P<work_batch_type>[^\/]+)/$',
         WorkBatchSettingsDetailsEndpoint.as_view(),
         name='clims-api-0-work-batch-settings-details'),
+    # Transitions within a workbatch
+
+    url(r'^work-batches/(?P<work_batch_id>[^\/]+)/transitions/$',
+        # WorkBatchFilesEndpoint.as_view(),
+        WorkBatchTransitionsEndpoint.as_view(),
+        name='clims-api-0-work-batch-transitions'),
 
     # Processes and Tasks
     url(r'^process-definitions/$',
